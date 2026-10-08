@@ -1,110 +1,129 @@
-# 🔊 SoundMax - Tab Audio Booster & EQ (Manifest V3)
+# 🔊 SoundMax - Tab Audio Booster & Studio EQ (Manifest V3)
 
-Ekstensi browser modern untuk Google Chrome, Microsoft Edge, Brave, dan Opera yang memungkinkan Anda mengontrol dan meningkatkan volume audio per-tab hingga **600%** (atau hingga **800%** dengan Turbo Mode), mengetikkan angka volume yang diinginkan secara langsung, mengatur **Professional 5-Band Studio Equalizer (60Hz, 250Hz, 1kHz, 4kHz, 12kHz)**, serta **menyimpan lebih dari satu Custom EQ Preset** dengan nama sendiri. 
+[![Manifest V3](https://img.shields.io/badge/Chrome%20Extension-Manifest%20V3-blue?logo=google-chrome)](https://developer.chrome.com/docs/extensions/mv3/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/Pikurii/soundmax-volume-booster?style=social)](https://github.com/Pikurii/soundmax-volume-booster)
 
-Dilengkapi arsitektur **Zero-Leak & 0.0% Idle CPU** (*AudioContext suspension & Web Audio node deallocation*), **Dual View Mode (Mini & Studio)**, serta kualitas suara mastering studio anti-kresek (*anti-clipping limiter & soft-clipper*).
+A modern, high-performance browser extension for **Google Chrome, Microsoft Edge, Brave, and Opera** that lets you control and amplify individual tab audio up to **600%** (or up to **800%** with Turbo Mode), type custom volume percentages directly, shape sound with a **5-Band Studio Parametric Equalizer (60Hz, 250Hz, 1kHz, 4kHz, 12kHz)**, and **save named custom presets**.
 
----
-
-## ✨ Fitur & Keunggulan Utama
-
-- **📐 Dual View Mode (Mode Minimalis & Mode Studio)**:
-  - **Mini Mode (Compact)**: Tampilan super ringkas berukuran ~250px × 95px khusus untuk quick volume slider, tombol Turn Off / On, tombol Reset 100%, dan tombol beralih cepat ke Mode Studio.
-  - **Studio Mode (Full)**: Tampilan lengkap dengan 5-band studio equalizer mixer, visualizer, quick boost buttons, dan pemilih tab audio aktif.
-- **🖱️ Kontrol Volume dengan Scroll Roda Mouse**:
-  - Cukup arahkan kursor ke area volume slider lalu scroll roda mouse untuk menaikkan/menurunkan volume secara instan.
-  - Bebas macet: scroll alami halaman dan mixer equalizer tetap berjalan lancar saat kursor tidak berada di atas slider volume. Dapat dinyalakan/dimatikan di menu Pengaturan.
-- **🛡️ Smart Limiter & Anti-Distorsi Multi-Stage**:
-  - Dilengkapi `DynamicsCompressorNode` (-1.5 dBFS) dan `WaveShaperNode` kurva linear analog soft-clipping tape saturation.
-  - Suara tetap 100% jernih dan bebas kresek (*kemresek / distorsi pecah*) bahkan saat di-boost hingga 600% - 800%.
-- **⌨️ Ketik Angka Volume Langsung (Editable Number Input)**:
-  - Ketikkan angka persentase volume yang Anda inginkan (misal: `125`, `275`, `450`, `600`) pada kotak input di samping slider atau tekan `Enter`.
-- **🎛️ Professional 5-Band Studio Parametric Equalizer**:
-  - **60 Hz (Sub-Bass)**: Dentuman sub-bass, kick drum, dan getaran bioskop.
-  - **250 Hz (Bass)**: Kehangatan melodi bas, ketukan nada, dan bodi vokal.
-  - **1 kHz (Mid)**: Inti kejelasan vokal manusia, podcast dialog, dan instrumen.
-  - **4 kHz (Presence)**: Artikulasi pengucapan vokal, anime seiyuu, dan dialog film.
-  - **12 kHz (Treble / Air)**: Kecerahan akustik, desah udara, cymbals, dan detail jernih.
-- **💾 Simpan Lebih dari Satu Custom Preset EQ**:
-  - Bebas mengatur 5 slider frekuensi lalu simpan dengan nama sendiri (*Anime Vocal Mode*, *EDM Bass*, *Podcast Enak*). Tersimpan permanen di penyimpanan browser.
-- **🌐 Bilingual Localization (Bahasa Indonesia & English)**:
-  - Tombol ganti bahasa instan (`ID` / `EN`) di pojok atas serta preferensi bahasa tersimpan otomatis.
-- **📑 Tab Audio Manager**:
-  - Memindai tab browser yang sedang memutar suara secara real-time dan berpindah tab hanya dengan satu klik.
-- **🌓 Dark Mode & Light Mode**:
-  - Desain glassmorphism gelap modern serta opsi mode terang yang nyaman di mata.
+Engineered with a **Zero-Leak & 0.0% Idle CPU** architecture (*hardware AudioContext suspension & full AudioNode graph deallocation*), **Dual View Modes (Mini & Studio)**, and mastering-grade anti-distortion (*brickwall peak limiter & analog tape soft-clipper*).
 
 ---
 
-## ⚡ Optimalisasi Performa & Jaminan Bebas RAM/CPU Leak (0.0% Idle CPU)
+## ✨ Features & Highlights
 
-Ekstensi ini dirancang dengan standar performa ketat Manifest V3 untuk memastikan tidak ada pemborosan daya baterai, lonjakan CPU, atau memory leak:
+- **📐 Dual View Mode (Mini & Studio)**:
+  - **Mini Mode (Compact)**: Ultra-compact view (~250px × 95px) for lightning-fast volume adjustments, one-click Turn Off / On, 100% Reset, and expand button.
+  - **Studio Mode (Full)**: Comprehensive control center with the full 5-band studio parametric equalizer, visualizer, quick boost presets, and live audible tab switcher.
+- **🖱️ Mouse Wheel Volume Scrolling**:
+  - Hover your cursor over the volume slider area and scroll your mouse wheel to adjust volume up or down in 5% increments.
+  - Natural page and mixer scrolling remains uninterrupted when hovering outside the slider. Can be toggled on/off in Settings.
+- **🛡️ Adaptive Smart Limiter & Anti-Distortion**:
+  - Integrated `DynamicsCompressorNode` (-1.5 dBFS) coupled with an analog `WaveShaperNode` soft-clipping saturation curve.
+  - Eliminates harsh digital clipping and distortion even at extreme boost levels (600% - 800%).
+- **⌨️ Direct Number Input (Editable Percentage)**:
+  - Type exact volume values (e.g. `125`, `275`, `450`, `600`) directly into the input box next to the slider and press `Enter`.
+- **🎛️ 5-Band Studio Parametric Equalizer**:
+  - **60 Hz (Sub-Bass)**: Subwoofer rumble, kick drum punch, and cinematic low-end.
+  - **250 Hz (Bass)**: Warmth, bass guitar harmonics, and male vocal body.
+  - **1 kHz (Mid)**: Core vocal intelligibility, podcast dialogue, and lead instruments.
+  - **4 kHz (Presence)**: Speech articulation, anime vocal clarity, and crisp movie dialogue.
+  - **12 kHz (Treble / Air)**: Acoustic sparkle, airy sheen, cymbals, and spatial detail.
+- **💾 Unlimited Custom EQ Presets**:
+  - Tune the 5 bands to your liking and click **"Save Preset"** to give it a custom name (*Anime Vocal Mode*, *EDM Bass*, *Podcast Master*). Presets are saved persistently in browser storage.
+- **🌐 Bilingual Support (English & Bahasa Indonesia)**:
+  - Instant one-click language toggle (`ID` / `EN`) in the top header. All UI text, preset descriptions, and tooltips switch dynamically.
+- **📑 Live Audible Tab Switcher**:
+  - Scans and lists all open tabs currently playing audio. Jump to any tab with a single click.
+- **🏷️ Real-time Toolbar Badge**:
+  - Displays current volume percentage right on your browser toolbar icon with color-coded boost tiers (Blue → Amber → Red).
+- **🌓 Dark & Light Glassmorphism Themes**:
+  - Sleek modern glassmorphism design with a high-contrast dark mode and clean light mode.
+
+---
+
+## ⚡ Performance Guarantees & Zero-Leak Architecture
+
+SoundMax is engineered to adhere strictly to Chrome Manifest V3 guidelines, ensuring zero battery drain and minimal memory footprint:
 
 1. **0.0% Idle CPU Guarantee (AudioContext Auto-Suspend)**:
-   - Pada browser Chromium, `AudioContext` yang dibiarkan dalam kondisi *running* akan memutar thread audio real-time secara terus-menerus (mengonsumsi ~1-2% CPU meskipun tidak ada suara).
-   - SoundMax secara otomatis memanggil `AudioContext.suspend()` ketika tab tidak di-boost atau capture dihentikan. CPU langsung turun ke **0.0%**.
-2. **Pembersihan Node Audio Total (Zero Web Audio Memory Leak)**:
-   - Ketika tab ditutup atau capture berhenti, seluruh node pemrosesan audio (`source`, 5 biquad filters, `gainNode`, `compressor`, `softClipper`, `outputGain`) diputus hubungannya (`.disconnect()`), semua stream track dimatikan (`.stop()`), dan referensi variabel di-null-kan agar Garbage Collector V8 segera mereklamasi memori RAM.
-3. **Pembersihan Siklus Hidup Ekstensi**:
-   - Deteksi tab yang tertutup (`chrome.tabs.onRemoved`) dan tab yang digantikan (`chrome.tabs.onReplaced`) secara otomatis membersihkan memori internal `tabStates`.
-   - Timer interval pada popup diputus secara bersih saat popup ditutup (`pagehide` & `beforeunload`).
-4. **Bebas Kode Berbahaya / Bebas Mining**:
-   - 100% kode JavaScript lokal tanpa `eval()`, tanpa `new Function()`, tanpa `fetch` remote ke server asing, dan tanpa library pihak ketiga yang mencurigakan.
-   - Hak akses (*permissions*) minimal: hanya `tabCapture`, `offscreen`, `tabs`, `storage`, dan `activeTab`. Tidak memerlukan izin luas `<all_urls>`.
+   - In Chromium browsers, an `AudioContext` left in the `running` state spins a real-time hardware audio rendering thread continuously (~0.5%–2% CPU even during complete silence).
+   - SoundMax automatically suspends the `AudioContext` whenever tab capture stops or volume is normalized. CPU usage immediately drops to **0.0%**.
+2. **Complete AudioNode Deallocation (Zero RAM Leak)**:
+   - When a tab is closed or unboosted, all 10 audio processing nodes (`source`, 5 biquad filters, `gainNode`, `compressor`, `softClipper`, `outputGain`) are disconnected (`.disconnect()`), media tracks are stopped (`.stop()`), and references are cleared for immediate V8 Garbage Collection.
+3. **Dead Tab Cleanup & DOM Memoization**:
+   - Closed or discarded tabs are automatically pruned from internal maps via `chrome.tabs.onRemoved` and `chrome.tabs.onReplaced`.
+   - The popup's tab polling uses signature memoization to prevent unnecessary DOM reflows and memory allocations.
+4. **100% Offline & Safe**:
+   - Zero external scripts, zero `eval()`, zero `new Function()`, zero remote telemetry `fetch` calls, and no unnecessary permissions (no `<all_urls>` required).
 
 ---
 
-## 📁 Struktur Direktori Proyek
+## ⌨️ Keyboard Shortcuts
+
+| Shortcut | Action |
+| :--- | :--- |
+| `Alt + V` | Open SoundMax popup |
+| `Alt + ↑` | Increase active tab volume (+10%) |
+| `Alt + ↓` | Decrease active tab volume (-10%) |
+| `Alt + M` | Toggle Mute / Unmute |
+| `0` to `6` *(when popup is open)* | Jump directly to 0%, 100%, 200%, ..., 600% |
+| `↑` / `↓` *(when popup is open)* | Adjust volume in 10% steps |
+| `Enter` *(inside volume number input)* | Apply typed volume percentage |
+
+> **Note**: You can customize shortcuts anytime by navigating to `chrome://extensions/shortcuts` in your address bar.
+
+---
+
+## 🚀 How to Install & Use
+
+### Method 1: Load Unpacked in Chrome / Edge / Brave / Opera
+1. Download or clone this repository:
+   ```bash
+   git clone https://github.com/Pikurii/soundmax-volume-booster.git
+   ```
+2. Open your browser and go to `chrome://extensions` (or `edge://extensions` in Edge).
+3. Enable **Developer mode** (toggle switch in the top-right corner).
+4. Click **Load unpacked** and select the `soundmax-extension` folder inside this project.
+5. Click the puzzle icon 🧩 on your toolbar and pin **SoundMax** for easy access!
+
+### Method 2: Install from ZIP
+1. Download [`soundmax-extension.zip`](https://github.com/Pikurii/soundmax-volume-booster/blob/main/soundmax-extension.zip) from this repository.
+2. Extract the `.zip` archive to a folder.
+3. In `chrome://extensions`, click **Load unpacked** and select the extracted folder.
+
+---
+
+## 📁 Repository Structure
 
 ```text
-Volume Setting Extension/
-├── manifest.json            # Konfigurasi SoundMax Manifest V3
-├── background.js           # Service Worker (manajemen state, muting sync & badge tab)
+soundmax-volume-booster/
+├── manifest.json            # Extension configuration (Manifest V3)
+├── background.js           # Background service worker (tab state sync & badge)
 ├── offscreen/
-│   ├── offscreen.html      # Host DOM Web Audio API di Manifest V3
-│   └── offscreen.js        # Engine Web Audio Capture + 5-Band EQ + Smart Limiter
+│   ├── offscreen.html      # Offscreen DOM host for Web Audio API
+│   └── offscreen.js        # DSP Audio Engine: 5-Band EQ, Limiter, 0.0% CPU suspend
 ├── popup/
-│   ├── popup.html          # UI Popup (Dual Mode: Studio & Mini, 5-Band EQ, Modals)
-│   ├── popup.css           # Styling modern glassmorphism (Dark & Light theme)
-│   └── popup.js            # Controller UI, audio state sync, custom preset manager
-├── icons/                  # Ikon ekstensi resolusi lengkap (16, 32, 48, 128 px)
-├── test-page/
-│   └── test.html           # Audio test bench mandiri untuk pengetesan lokal
-├── preview.html            # Simulasi browser interaktif
-├── .gitignore              # Konfigurasi git ignore bersih
-└── README.md               # Dokumentasi lengkap
+│   ├── popup.html          # Dual Mode UI (Mini & Studio views)
+│   ├── popup.css           # Glassmorphism dark/light design system
+│   └── popup.js            # UI controller, state sync & preset manager
+├── icons/                  # High-resolution icons (16, 32, 48, 128 px)
+├── soundmax-extension/     # Clean standalone package ready for browser install
+├── soundmax-extension.zip  # Production ZIP archive ready for Chrome Web Store
+├── LICENSE                 # MIT License
+└── README.md               # Documentation
 ```
-
----
-
-## 🚀 Panduan Upload ke GitHub & Chrome Web Store
-
-### 1. Upload ke GitHub
-```bash
-git init
-git add .
-git commit -m "Initial commit: SoundMax Extension v1.1.0 by Pikuri"
-git branch -M main
-git remote add origin https://github.com/Pikurii/soundmax-volume-booster.git
-git push -u origin main
-```
-
-### 2. Upload ke Google Chrome Web Store
-1. Siapkan file arsip `.zip` yang berisi folder proyek (jangan menyertakan folder `.git`):
-   - Masukkan file: `manifest.json`, `background.js`, folder `offscreen/`, folder `popup/`, dan folder `icons/`.
-2. Buka [Chrome Developer Dashboard](https://chrome.google.com/webstore/devconsole).
-3. Klik **New Item** dan upload file `soundmax-extension.zip`.
-4. Isi deskripsi ekstensi, unggah tangkapan layar (screenshot), dan submit untuk proses peninjauan (biasanya memakan waktu 1–3 hari kerja).
 
 ---
 
 ## 👨‍💻 Developer & Watermark
 
-- **Creator**: **Pikuri** ([@Pikurii](https://github.com/Pikurii))
+- **Creator & Maintainer**: **Pikuri** ([@Pikurii](https://github.com/Pikurii))
 - **GitHub Profile**: [https://github.com/Pikurii](https://github.com/Pikurii)
 - **Support & Sponsor**: [Ko-fi](https://ko-fi.com/pikuri) • [Trakteer](https://trakteer.id/Pikuri)
 
 ---
 
-## 📄 Lisensi
-Hak Cipta (c) 2026 Pikuri. Dilisensikan di bawah lisensi MIT.
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE) - Copyright (c) 2026 **Pikuri**.
