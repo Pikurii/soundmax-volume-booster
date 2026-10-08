@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs & Debugging
+*.log
+npm-debug.log*
+
+# Local Test & Scratch
+.system_generated/
+scratch/

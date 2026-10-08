@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Volume Master - Audio Test Studio</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #131c2e;
+      --card-border: rgba(255, 255, 255, 0.08);
+      --primary: #3b82f6;
+      --cyan: #06b6d4;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .header {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-badge {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: var(--cyan);
+      font-size: 0.85rem;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-weight: 600;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #60a5fa, #22d3ee);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p.desc {
+      color: var(--text-muted);
+      max-width: 600px;
+      line-height: 1.6;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .card h2 {
+      font-size: 1.3rem;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .audio-controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    .play-btn {
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: white;
+      padding: 16px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .play-btn:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(59, 130, 246, 0.25);
+    }
+
+    .play-btn.active {
+      background: linear-gradient(135deg, var(--primary), var(--cyan));
+      border-color: transparent;
+    }
+
+    .play-btn .btn-icon {
+      font-size: 24px;
+    }
+
+    .play-btn .btn-sub {
+      font-size: 0.75rem;
+      opacity: 0.8;
+      font-weight: normal;
+    }
+
+    .visualizer-box {
+      margin-top: 20px;
+      height: 60px;
+      background: #090d16;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--card-border);
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    .instructions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 10px;
+      color: #cbd5e1;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .instructions-list li {
+      margin-left: 20px;
+    }
+
+    .badge-key {
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: #38bdf8;
+    }
+
+    .footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <span class="header-badge">🔊 Audio Testing Environment</span>
+      <h1>Volume Master Test Studio</h1>
+      <p class="desc">
+        Halaman uji coba audio mandiri untuk menguji fitur penguatan volume tab (hingga 600%), Equalizer 3-band, Bass Boost, Voice Boost, dan deteksi audio tab secara langsung!
+      </p>
+    </div>
+
+    <!-- Audio Player Controls -->
+    <div class="card">
+      <h2>🎵 Generator Suara & Musik Uji</h2>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 16px;">
+        Klik salah satu tombol di bawah untuk memutar audio sintetis browser secara terus menerus:
+      </p>
+
+      <div class="audio-controls">
+        <button id="btn-sound-electronic" class="play-btn">
+          <span class="btn-icon">🎧</span>
+          <span>Melodi & Bass Elektronik</span>
+          <span class="btn-sub">Bagus untuk uji Bass Boost</span>
+        </button>
+
+        <button id="btn-sound-speech" class="play-btn">
+          <span class="btn-icon">🎙️</span>
+          <span>Simulasi Dialog Vokal</span>
+          <span class="btn-sub">Bagus untuk uji Voice Boost</span>
+        </button>
+
+        <button id="btn-sound-ambient" class="play-btn">
+          <span class="btn-icon">🌌</span>
+          <span>Harmoni Sintesis / Synthwave</span>
+          <span class="btn-sub">Frekuensi kaya 40Hz - 12kHz</span>
+        </button>
+      </div>
+
+      <div class="visualizer-box">
+        <canvas id="studio-visualizer" width="750" height="60"></canvas>
+      </div>
+    </div>
+
+    <!-- How to test extension -->
+    <div class="card">
+      <h2>🚀 Cara Menguji Ekstensi Volume Master</h2>
+      <ol class="instructions-list">
+        <li>
+          <strong>Muat Ekstensi ke Browser:</strong> Buka <code class="badge-key">chrome://extensions</code> di Google Chrome atau Edge, aktifkan <em>Developer Mode</em> di kanan atas, lalu klik <strong>Load Unpacked</strong> dan pilih folder projek ini.
+        </li>
+        <li>
+          <strong>Putar Suara:</strong> Klik tombol audio di atas agar tab ini aktif mengeluarkan audio.
+        </li>
+        <li>
+          <strong>Buka Popup Ekstensi:</strong> Klik ikon <strong>Volume Master</strong> pada bilah toolbar browser (atau tekan tombol pintas <code class="badge-key">Alt + V</code>).
+        </li>
+        <li>
+          <strong>Tingkatkan Volume:</strong> Geser slider volume dari <code class="badge-key">100%</code> menuju <code class="badge-key">300%</code> hingga <code class="badge-key">600%</code>. Suara akan terdengar semakin kencang secara signifikan!
+        </li>
+        <li>
+          <strong>Uji Equalizer & Preset:</strong>
+          Buka <em>Sound shaping</em> dan ubah bass atau pilih preset <strong>Bass boost</strong> / <strong>Voice boost</strong>.
+        </li>
+        <li>
+          <strong>Lihat Badge Toolbar:</strong> Perhatikan ikon ekstensi di toolbar browser otomatis menampilkan persentase volume tab (misal <code class="badge-key">250%</code>) dengan warna dinamis.
+        </li>
+      </ol>
+    </div>
+
+    <div class="footer">
+      Volume Master Browser Extension • Dibuat dengan Web Audio API & Manifest V3
+    </div>
+  </div>
+
+  <script>
+    // Web Audio Synthesizer Tone Generator
+    let audioCtx = null;
+    let currentSource = null;
+    let isPlaying = false;
+    let activeTrackType = null;
+    let masterGain = null;
+    let analyserNode = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        masterGain = audioCtx.createGain();
+        masterGain.gain.value = 0.25; // Safe starting volume
+
+        analyserNode = audioCtx.createAnalyser();
+        analyserNode.fftSize = 64;
+
+        masterGain.connect(analyserNode);
+        analyserNode.connect(audioCtx.destination);
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function stopCurrentTrack() {
+      if (currentSource) {
+        try {
+          if (currentSource.stop) currentSource.stop();
+          if (currentSource.intervalId) clearInterval(currentSource.intervalId);
+        } catch (e) {}
+        currentSource = null;
+      }
+      isPlaying = false;
+      document.querySelectorAll('.play-btn').forEach(btn => btn.classList.remove('active'));
+    }
+
+    function playElectronicLoop() {
+      initAudio();
+      stopCurrentTrack();
+
+      isPlaying = true;
+      activeTrackType = 'electronic';
+      document.getElementById('btn-sound-electronic').classList.add('active');
+
+      const notes = [130.81, 146.83, 164.81, 196.00, 220.00, 261.63, 196.00, 164.81];
+      let step = 0;
+
+      const playStep = () => {
+        if (!isPlaying) return;
+        const now = audioCtx.currentTime;
+
+        // Bass synth pulse
+        const osc = audioCtx.createOscillator();
+        const noteGain = audioCtx.createGain();
+        osc.type = (step % 2 === 0) ? 'sawtooth' : 'triangle';
+        osc.frequency.setValueAtTime(notes[step % notes.length], now);
+
+        noteGain.gain.setValueAtTime(0.3, now);
+        noteGain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+
+        osc.connect(noteGain);
+        noteGain.connect(masterGain);
+        osc.start(now);
+        osc.stop(now + 0.3);
+
+        // Kick thump on quarter beats
+        if (step % 2 === 0) {
+          const kickOsc = audioCtx.createOscillator();
+          const kickGain = audioCtx.createGain();
+          kickOsc.frequency.setValueAtTime(150, now);
+          kickOsc.frequency.exponentialRampToValueAtTime(35, now + 0.12);
+          kickGain.gain.setValueAtTime(0.4, now);
+          kickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+          kickOsc.connect(kickGain);
+          kickGain.connect(masterGain);
+          kickOsc.start(now);
+          kickOsc.stop(now + 0.15);
+        }
+
+        step = (step + 1) % notes.length;
+      };
+
+      const intervalId = setInterval(playStep, 250);
+      currentSource = { intervalId };
+    }
+
+    function playSpeechSimulation() {
+      initAudio();
+      stopCurrentTrack();
+
+      isPlaying = true;
+      activeTrackType = 'speech';
+      document.getElementById('btn-sound-speech').classList.add('active');
+
+      // Speech frequencies simulation (formants 300Hz, 800Hz, 2500Hz)
+      const speechNotes = [220, 246, 261, 293, 329, 293, 261];
+      let idx = 0;
+
+      const speakStep = () => {
+        if (!isPlaying) return;
+        const now = audioCtx.currentTime;
+
+        const osc = audioCtx.createOscillator();
+        const f1 = audioCtx.createBiquadFilter();
+        const noteGain = audioCtx.createGain();
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(speechNotes[idx % speechNotes.length] * 0.8, now);
+
+        f1.type = 'bandpass';
+        f1.frequency.setValueAtTime(1200 + Math.sin(idx) * 400, now);
+        f1.Q.value = 4.0;
+
+        noteGain.gain.setValueAtTime(0.25, now);
+        noteGain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+
+        osc.connect(f1);
+        f1.connect(noteGain);
+        noteGain.connect(masterGain);
+
+        osc.start(now);
+        osc.stop(now + 0.38);
+
+        idx++;
+      };
+
+      const intervalId = setInterval(speakStep, 320);
+      currentSource = { intervalId };
+    }
+
+    function playAmbientChord() {
+      initAudio();
+      stopCurrentTrack();
+
+      isPlaying = true;
+      activeTrackType = 'ambient';
+      document.getElementById('btn-sound-ambient').classList.add('active');
+
+      const freqs = [110, 164.81, 196, 246.94, 329.63];
+      const oscs = freqs.map((f, i) => {
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = f;
+        g.gain.value = 0.08 / freqs.length;
+        osc.connect(g);
+        g.connect(masterGain);
+        osc.start();
+        return osc;
+      });
+
+      currentSource = {
+        stop: () => oscs.forEach(o => o.stop())
+      };
+    }
+
+    document.getElementById('btn-sound-electronic').addEventListener('click', () => {
+      if (isPlaying && activeTrackType === 'electronic') stopCurrentTrack();
+      else playElectronicLoop();
+    });
+
+    document.getElementById('btn-sound-speech').addEventListener('click', () => {
+      if (isPlaying && activeTrackType === 'speech') stopCurrentTrack();
+      else playSpeechSimulation();
+    });
+
+    document.getElementById('btn-sound-ambient').addEventListener('click', () => {
+      if (isPlaying && activeTrackType === 'ambient') stopCurrentTrack();
+      else playAmbientChord();
+    });
+
+    // Studio Visualizer
+    const canvas = document.getElementById('studio-visualizer');
+    const ctx = canvas.getContext('2d');
+    const barsCount = 36;
+
+    function renderStudioVisualizer() {
+      requestAnimationFrame(renderStudioVisualizer);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      let dataArray = new Uint8Array(32);
+      if (analyserNode && isPlaying) {
+        analyserNode.getByteFrequencyData(dataArray);
+      }
+
+      const barWidth = canvas.width / barsCount - 4;
+      for (let i = 0; i < barsCount; i++) {
+        let val = isPlaying ? (dataArray[i % dataArray.length] / 255) : 0.04;
+        let barH = Math.max(4, val * canvas.height * 0.9);
+        let x = i * (barWidth + 4) + 2;
+        let y = canvas.height - barH;
+
+        let grad = ctx.createLinearGradient(0, canvas.height, 0, 0);
+        grad.addColorStop(0, '#3b82f6');
+        grad.addColorStop(1, '#06b6d4');
+        ctx.fillStyle = grad;
+        ctx.fillRect(x, y, barWidth, barH);
+      }
+    }
+
+    renderStudioVisualizer();
+  </script>
+</body>
+</html>
