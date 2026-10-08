@@ -1,8 +1,22 @@
 # 🔊 SoundMax - Tab Audio Booster & Studio EQ (Manifest V3)
 
-[![Manifest V3](https://img.shields.io/badge/Chrome%20Extension-Manifest%20V3-blue?logo=google-chrome)](https://developer.chrome.com/docs/extensions/mv3/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/Pikurii/soundmax-volume-booster?style=social)](https://github.com/Pikurii/soundmax-volume-booster)
+<p align="center">
+  <a href="https://github.com/Pikurii/soundmax-volume-booster/raw/main/soundmax-extension.zip">
+    <img src="https://img.shields.io/badge/⬇️_DOWNLOAD_EXTENSION_(ZIP)-READY_TO_USE-22c55e?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Download ZIP" />
+  </a>
+  <a href="https://ko-fi.com/pikurii" target="_blank">
+    <img src="https://img.shields.io/badge/Ko--fi-Support_Pikuri-ff5e5b?style=for-the-badge&logo=kofi&logoColor=white" alt="Support on Ko-fi" />
+  </a>
+  <a href="https://tako.id/Pikuri" target="_blank">
+    <img src="https://img.shields.io/badge/Tako.id-Tip_Pikuri-3b82f6?style=for-the-badge" alt="Support on Tako.id" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://developer.chrome.com/docs/extensions/mv3/"><img src="https://img.shields.io/badge/Chrome%20Extension-Manifest%20V3-blue?logo=google-chrome" alt="Manifest V3" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License MIT" /></a>
+  <a href="https://github.com/Pikurii/soundmax-volume-booster"><img src="https://img.shields.io/github/stars/Pikurii/soundmax-volume-booster?style=social" alt="GitHub stars" /></a>
+</p>
 
 A modern, high-performance browser extension for **Google Chrome, Microsoft Edge, Brave, and Opera** that lets you control and amplify individual tab audio up to **600%** (or up to **800%** with Turbo Mode), type custom volume percentages directly, shape sound with a **5-Band Studio Parametric Equalizer (60Hz, 250Hz, 1kHz, 4kHz, 12kHz)**, and **save named custom presets**.
 
@@ -77,20 +91,21 @@ SoundMax is engineered to adhere strictly to Chrome Manifest V3 guidelines, ensu
 
 ## 🚀 How to Install & Use
 
-### Method 1: Load Unpacked in Chrome / Edge / Brave / Opera
-1. Download or clone this repository:
+### Option 1: 1-Click Install via Pre-built ZIP (Recommended)
+1. Click the green button above or download [`soundmax-extension.zip`](https://github.com/Pikurii/soundmax-volume-booster/raw/main/soundmax-extension.zip).
+2. Extract the ZIP archive into any folder on your computer.
+3. Open your browser and navigate to `chrome://extensions` (or `edge://extensions` in Edge).
+4. Turn on **Developer mode** (toggle switch in the top-right corner).
+5. Click **Load unpacked** and select the extracted folder.
+6. Pin **SoundMax** to your toolbar and enjoy!
+
+### Option 2: Clone from Source
+1. Clone this repository:
    ```bash
    git clone https://github.com/Pikurii/soundmax-volume-booster.git
    ```
-2. Open your browser and go to `chrome://extensions` (or `edge://extensions` in Edge).
-3. Enable **Developer mode** (toggle switch in the top-right corner).
-4. Click **Load unpacked** and select the `soundmax-extension` folder inside this project.
-5. Click the puzzle icon 🧩 on your toolbar and pin **SoundMax** for easy access!
-
-### Method 2: Install from ZIP
-1. Download [`soundmax-extension.zip`](https://github.com/Pikurii/soundmax-volume-booster/blob/main/soundmax-extension.zip) from this repository.
-2. Extract the `.zip` archive to a folder.
-3. In `chrome://extensions`, click **Load unpacked** and select the extracted folder.
+2. In `chrome://extensions`, enable **Developer mode**.
+3. Click **Load unpacked** and select this cloned repository root folder.
 
 ---
 
@@ -107,10 +122,14 @@ soundmax-volume-booster/
 │   ├── popup.html          # Dual Mode UI (Mini & Studio views)
 │   ├── popup.css           # Glassmorphism dark/light design system
 │   └── popup.js            # UI controller, state sync & preset manager
-├── icons/                  # High-resolution icons (16, 32, 48, 128 px)
-├── soundmax-extension/     # Clean standalone package ready for browser install
-├── soundmax-extension.zip  # Production ZIP archive ready for Chrome Web Store
-├── LICENSE                 # MIT License
+├── icons/                  # High-resolution extension icons (16, 32, 48, 128 px)
+├── dev-tools/              # Interactive preview simulator & audio test bench
+│   ├── server.js           # Local preview web server
+│   ├── preview.html        # Interactive popup simulator
+│   ├── generate_icons.js   # Icon generator utility
+│   └── test-page/          # Audio synthesizer test bench
+├── soundmax-extension.zip  # Production ZIP archive ready for Chrome Web Store & direct install
+├── LICENSE                 # MIT License (c) 2026 Pikuri
 └── README.md               # Documentation
 ```
 
@@ -120,7 +139,7 @@ soundmax-volume-booster/
 
 - **Creator & Maintainer**: **Pikuri** ([@Pikurii](https://github.com/Pikurii))
 - **GitHub Profile**: [https://github.com/Pikurii](https://github.com/Pikurii)
-- **Support & Sponsor**: [Ko-fi](https://ko-fi.com/pikuri) • [Trakteer](https://trakteer.id/Pikuri)
+- **Support & Sponsor**: [Ko-fi](https://ko-fi.com/pikurii) • [Tako.id](https://tako.id/Pikuri)
 
 ---
 

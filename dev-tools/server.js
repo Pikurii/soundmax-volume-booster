@@ -15,8 +15,14 @@ const MIME_TYPES = {
 
 const server = http.createServer((req, res) => {
   let reqPath = req.url.split('?')[0];
-  if (reqPath === '/') reqPath = '/preview.html';
-  const filePath = path.join(__dirname, reqPath);
+  let filePath;
+  if (reqPath === '/' || reqPath === '/preview.html') {
+    filePath = path.join(__dirname, 'preview.html');
+  } else if (reqPath.startsWith('/test-page/')) {
+    filePath = path.join(__dirname, reqPath);
+  } else {
+    filePath = path.join(__dirname, '..', reqPath);
+  }
 
   fs.readFile(filePath, (err, data) => {
     if (err) {
