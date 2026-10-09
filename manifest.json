@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "SoundMax - Tab Audio Booster & EQ",
   "short_name": "SoundMax",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Tingkatkan volume tab hingga 600%, sesuaikan Equalizer Studio 5-Band (60Hz - 12kHz), simpan preset custom, dan beralih ke tab bersuara dengan sekali klik.",
   "author": "Pikuri (https://github.com/Pikurii)",
   "homepage_url": "https://github.com/Pikurii",

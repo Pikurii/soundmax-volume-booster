@@ -131,6 +131,27 @@ const TRANSLATIONS = {
     sc_numbers: "Langsung meloncat ke 0% – 600%",
     btn_settings_done: "Selesai",
     
+    // Site Default & Status Strip
+    site_default_btn: "Default Situs",
+    site_default_saved: "Tersimpan",
+    site_default_btn_title: "Jadikan volume & EQ saat ini sebagai default permanen situs ini",
+    mini_site_default: "⭐ Situs",
+    mini_site_default_title: "Simpan default untuk situs ini",
+    settings_default_vol_title: "🔊 Default volume",
+    settings_default_vol_desc: "Untuk situs yang belum memiliki pengaturan tersimpan",
+    settings_backup_title: "📦 Backup & Restore",
+    settings_backup_desc: "Ekspor pengaturan & situs tersimpan ke file, atau pulihkan dari cadangan",
+    btn_export: "Export",
+    btn_import: "Import",
+    saved_sites_title_single: "1 situs tersimpan",
+    saved_sites_title_plural: "{count} situs tersimpan",
+    saved_sites_desc: "Situs dengan pengaturan volume atau EQ kustom",
+    btn_delete_all: "Delete All",
+    delete_all_confirm: "Hapus seluruh profil volume dan EQ untuk semua situs tersimpan?",
+    saved_sites_empty: "Belum ada situs tersimpan.",
+    backup_restore_success: "Cadangan berhasil dipulihkan!",
+    backup_restore_invalid: "File cadangan tidak valid atau rusak.",
+    
     // Footer & Rating
     footer_shortcuts: "Keyboard Shortcuts",
     footer_creator: "by Pikuri",
@@ -258,6 +279,27 @@ const TRANSLATIONS = {
     sc_numbers: "Jump directly to 0% – 600%",
     btn_settings_done: "Done",
     
+    // Site Default & Status Strip
+    site_default_btn: "Site Default",
+    site_default_saved: "Saved",
+    site_default_btn_title: "Save current volume & EQ as persistent default for this site",
+    mini_site_default: "⭐ Site",
+    mini_site_default_title: "Save default for this site",
+    settings_default_vol_title: "🔊 Default volume",
+    settings_default_vol_desc: "For sites with no saved setting",
+    settings_backup_title: "📦 Backup & Restore",
+    settings_backup_desc: "Export all settings and saved volumes to a file, or restore from a backup",
+    btn_export: "Export",
+    btn_import: "Import",
+    saved_sites_title_single: "1 saved site",
+    saved_sites_title_plural: "{count} saved sites",
+    saved_sites_desc: "Sites with custom volume or EQ settings",
+    btn_delete_all: "Delete All",
+    delete_all_confirm: "Delete all saved volume and EQ settings for all sites?",
+    saved_sites_empty: "No saved sites yet.",
+    backup_restore_success: "Backup restored successfully!",
+    backup_restore_invalid: "Invalid or corrupted backup file.",
+    
     // Footer & Rating
     footer_shortcuts: "Keyboard Shortcuts",
     footer_creator: "by Pikuri",
@@ -288,7 +330,9 @@ let appState = {
     preset: 'flat'
   },
   domain: '',
+  savedSite: null,
   savedDomainVolume: null,
+  globalDefaultVolume: 100,
   isCaptured: false,
   theme: 'dark',
   language: 'id',
@@ -388,7 +432,17 @@ const miniMuteLabel = document.getElementById('mini-mute-label');
 const btnMiniMuteIcon = document.getElementById('btn-mini-mute-icon');
 const miniSpeakerLeftIcon = document.getElementById('mini-speaker-left-icon');
 const btnMiniReset = document.getElementById('btn-mini-reset');
+const btnMiniSiteDefault = document.getElementById('btn-mini-site-default');
+const lblMiniSiteDefault = document.getElementById('lbl-mini-site-default');
 const lblMiniStudio = document.getElementById('lbl-mini-studio');
+
+// Active Site Profile Strip Elements
+const siteStatusStrip = document.getElementById('site-status-strip');
+const siteDomainName = document.getElementById('site-domain-name');
+const siteSavedBadge = document.getElementById('site-saved-badge');
+const btnSaveSiteDefault = document.getElementById('btn-save-site-default');
+const siteBtnIcon = document.getElementById('site-btn-icon');
+const lblSaveSiteDefault = document.getElementById('lbl-save-site-default');
 
 // Quick Action Boost Buttons
 const btnPresetVoice = document.getElementById('btn-preset-voice');
@@ -498,6 +552,29 @@ const scDescDown = document.getElementById('sc-desc-down');
 const scDescMute = document.getElementById('sc-desc-mute');
 const scDescJump = document.getElementById('sc-desc-jump');
 
+// Default Volume in Settings Elements
+const lblSettingsDefaultVolTitle = document.getElementById('lbl-settings-default-vol-title');
+const lblSettingsDefaultVolDesc = document.getElementById('lbl-settings-default-vol-desc');
+const settingDefaultVolInput = document.getElementById('setting-default-vol-input');
+const settingDefaultVolSlider = document.getElementById('setting-default-vol-slider');
+const settingDefaultVolFill = document.getElementById('setting-default-vol-fill');
+
+// Backup & Restore Elements
+const lblSettingsBackupTitle = document.getElementById('lbl-settings-backup-title');
+const lblSettingsBackupDesc = document.getElementById('lbl-settings-backup-desc');
+const btnBackupExport = document.getElementById('btn-backup-export');
+const lblBtnExport = document.getElementById('lbl-btn-export');
+const btnBackupImport = document.getElementById('btn-backup-import');
+const lblBtnImport = document.getElementById('lbl-btn-import');
+const fileInputBackup = document.getElementById('file-input-backup');
+
+// Saved Sites Manager Elements
+const lblSavedSitesCount = document.getElementById('lbl-saved-sites-count');
+const lblSavedSitesDesc = document.getElementById('lbl-saved-sites-desc');
+const btnDeleteAllSites = document.getElementById('btn-delete-all-sites');
+const lblBtnDeleteAll = document.getElementById('lbl-btn-delete-all');
+const savedSitesList = document.getElementById('saved-sites-list');
+
 /* =========================================================
    Initialization
 ========================================================= */
@@ -540,7 +617,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function loadPreferences() {
   if (isExtension) {
     try {
-      const data = await chrome.storage.local.get(['theme', 'language', 'tipDismissed', 'turboMode', 'rememberDomains', 'antiDistortion', 'popupMode', 'wheelScrollEnabled']);
+      const data = await chrome.storage.local.get(['theme', 'language', 'tipDismissed', 'turboMode', 'rememberDomains', 'antiDistortion', 'popupMode', 'wheelScrollEnabled', 'globalDefaultVolume']);
       if (data.theme) appState.theme = data.theme;
       if (data.language) appState.language = data.language;
       if (data.tipDismissed) appState.tipDismissed = data.tipDismissed;
@@ -549,6 +626,7 @@ async function loadPreferences() {
       if (data.antiDistortion !== undefined) appState.antiDistortion = data.antiDistortion;
       if (data.popupMode) appState.popupMode = data.popupMode;
       if (data.wheelScrollEnabled !== undefined) appState.wheelScrollEnabled = data.wheelScrollEnabled;
+      if (typeof data.globalDefaultVolume === 'number') appState.globalDefaultVolume = data.globalDefaultVolume;
     } catch (e) {}
   } else {
     try {
@@ -566,6 +644,8 @@ async function loadPreferences() {
       if (localStorage.getItem('soundmax_wheel_scroll') !== null) {
         appState.wheelScrollEnabled = localStorage.getItem('soundmax_wheel_scroll') === 'true';
       }
+      const savedDefVol = localStorage.getItem('soundmax_default_vol');
+      if (savedDefVol !== null) appState.globalDefaultVolume = parseInt(savedDefVol, 10) || 100;
     } catch (e) {}
   }
 
@@ -596,6 +676,8 @@ function applyTurboMode(enabled) {
   volumeSlider.max = maxVol;
   if (volumeInput) volumeInput.max = maxVol;
   if (miniVolumeSlider) miniVolumeSlider.max = maxVol;
+  if (settingDefaultVolSlider) settingDefaultVolSlider.max = maxVol;
+  if (settingDefaultVolInput) settingDefaultVolInput.max = maxVol;
   volMaxLabel.textContent = `${maxVol} %`;
   updateSliderUI(appState.volume);
 }
@@ -776,6 +858,21 @@ function applyLanguage(lang) {
   if (scDescJump) scDescJump.textContent = t.sc_numbers;
   if (btnSaveSettings) btnSaveSettings.textContent = t.btn_settings_done;
 
+  // Site Status & Action
+  updateSiteStatusUI();
+  if (lblMiniSiteDefault) lblMiniSiteDefault.textContent = t.mini_site_default;
+  if (btnMiniSiteDefault) btnMiniSiteDefault.title = t.mini_site_default_title;
+
+  // New Settings Groups
+  if (lblSettingsDefaultVolTitle) lblSettingsDefaultVolTitle.textContent = t.settings_default_vol_title;
+  if (lblSettingsDefaultVolDesc) lblSettingsDefaultVolDesc.textContent = t.settings_default_vol_desc;
+  if (lblSettingsBackupTitle) lblSettingsBackupTitle.textContent = t.settings_backup_title;
+  if (lblSettingsBackupDesc) lblSettingsBackupDesc.textContent = t.settings_backup_desc;
+  if (lblBtnExport) lblBtnExport.textContent = t.btn_export;
+  if (lblBtnImport) lblBtnImport.textContent = t.btn_import;
+  if (lblSavedSitesDesc) lblSavedSitesDesc.textContent = t.saved_sites_desc;
+  if (lblBtnDeleteAll) lblBtnDeleteAll.textContent = t.btn_delete_all;
+
   // Refresh dynamic states
   syncEqualizerUI();
   renderCustomPresetsDropdown(appState.eq.preset);
@@ -831,7 +928,12 @@ async function refreshTabState() {
             };
           }
           appState.domain = res.domain || '';
+          appState.savedSite = res.savedSite || null;
           appState.savedDomainVolume = res.savedDomainVolume || null;
+          if (typeof res.globalDefaultVolume === 'number') {
+            appState.globalDefaultVolume = res.globalDefaultVolume;
+            updateDefaultVolUI(appState.globalDefaultVolume);
+          }
           appState.isCaptured = !!res.isCaptured;
           if (res.antiDistortion !== undefined) {
             updateLimiterUI(res.antiDistortion);
@@ -844,7 +946,9 @@ async function refreshTabState() {
   } else {
     appState.tabId = 101;
     appState.domain = 'youtube.com';
-    appState.savedDomainVolume = 190;
+    appState.savedSite = { volume: 180, eq: { preset: 'bass_boost' }, updatedAt: Date.now() };
+    appState.savedDomainVolume = 180;
+    updateDefaultVolUI(appState.globalDefaultVolume);
   }
 
   syncAllUI();
@@ -860,6 +964,7 @@ function syncAllUI() {
   updateMuteUI(appState.isMuted);
   updatePresetHighlight();
   syncEqualizerUI();
+  updateSiteStatusUI();
 }
 
 /* =========================================================
@@ -1291,6 +1396,325 @@ function escapeHtml(str) {
 }
 
 /* =========================================================
+   Site Profile & Saved Sites Management
+========================================================= */
+function getPresetDisplayName(presetKey) {
+  if (!presetKey || presetKey === 'flat') return 'Flat';
+  if (presetKey === 'bass_boost') return 'Bass';
+  if (presetKey === 'voice_boost') return 'Vocal';
+  if (presetKey === 'rock') return 'Rock';
+  if (presetKey === 'night') return 'Night';
+  const custom = userCustomPresets.find(p => p.id === presetKey);
+  if (custom) return custom.name;
+  return 'Custom';
+}
+
+function updateSiteStatusUI() {
+  const t = TRANSLATIONS[appState.language] || TRANSLATIONS.id;
+  const domain = appState.domain || 'Tab Audio';
+  if (siteDomainName) {
+    siteDomainName.textContent = domain;
+    siteDomainName.title = `Website: ${domain}`;
+  }
+
+  const isSaved = !!(appState.savedSite && appState.savedSite.volume !== undefined);
+
+  if (siteSavedBadge) {
+    if (isSaved) {
+      siteSavedBadge.style.display = 'inline-block';
+      let badgeText = `✓ ${appState.savedSite.volume}%`;
+      if (appState.savedSite.eq && appState.savedSite.eq.preset && appState.savedSite.eq.preset !== 'flat') {
+        badgeText += ` • ${getPresetDisplayName(appState.savedSite.eq.preset)}`;
+      }
+      siteSavedBadge.textContent = badgeText;
+      siteSavedBadge.title = `Default tersimpan: ${badgeText}`;
+    } else {
+      siteSavedBadge.style.display = 'none';
+    }
+  }
+
+  if (btnSaveSiteDefault) {
+    if (isSaved) {
+      btnSaveSiteDefault.classList.add('saved');
+      if (lblSaveSiteDefault) lblSaveSiteDefault.textContent = t.site_default_saved;
+      if (siteBtnIcon) siteBtnIcon.textContent = '✓';
+    } else {
+      btnSaveSiteDefault.classList.remove('saved');
+      if (lblSaveSiteDefault) lblSaveSiteDefault.textContent = t.site_default_btn;
+      if (siteBtnIcon) siteBtnIcon.textContent = '⭐';
+    }
+    btnSaveSiteDefault.title = t.site_default_btn_title;
+  }
+
+  if (btnMiniSiteDefault) {
+    if (isSaved) {
+      btnMiniSiteDefault.classList.add('saved');
+    } else {
+      btnMiniSiteDefault.classList.remove('saved');
+    }
+    btnMiniSiteDefault.title = t.mini_site_default_title;
+  }
+}
+
+async function saveCurrentAsSiteDefault() {
+  if (!appState.domain) return;
+  const currentVol = appState.isMuted ? (appState.previousVolume || 100) : appState.volume;
+  const currentEq = { ...appState.eq };
+
+  appState.savedSite = {
+    volume: currentVol,
+    eq: currentEq,
+    updatedAt: Date.now()
+  };
+  appState.savedDomainVolume = currentVol;
+
+  updateSiteStatusUI();
+
+  if (isExtension) {
+    await chrome.runtime.sendMessage({
+      type: 'SAVE_SITE_PROFILE',
+      domain: appState.domain,
+      volume: currentVol,
+      eq: currentEq
+    }).catch(() => {});
+  } else {
+    let mockSaved = JSON.parse(localStorage.getItem('soundmax_saved_sites') || '{}');
+    mockSaved[appState.domain] = appState.savedSite;
+    localStorage.setItem('soundmax_saved_sites', JSON.stringify(mockSaved));
+  }
+
+  renderSavedSitesList();
+}
+
+function updateDefaultVolUI(vol) {
+  const max = parseInt(settingDefaultVolSlider?.max || 600, 10);
+  const valid = Math.max(0, Math.min(max, isNaN(vol) ? 100 : vol));
+  appState.globalDefaultVolume = valid;
+  if (settingDefaultVolSlider) settingDefaultVolSlider.value = valid;
+  if (settingDefaultVolInput) settingDefaultVolInput.value = valid;
+  if (settingDefaultVolFill) {
+    const percent = Math.min(100, Math.max(0, (valid / max) * 100));
+    settingDefaultVolFill.style.width = `${percent}%`;
+  }
+}
+
+async function renderSavedSitesList() {
+  if (!savedSitesList) return;
+  const t = TRANSLATIONS[appState.language] || TRANSLATIONS.id;
+
+  let sites = [];
+  if (isExtension) {
+    try {
+      const res = await chrome.runtime.sendMessage({ type: 'GET_SAVED_SITES' });
+      if (Array.isArray(res)) sites = res;
+    } catch (e) {}
+  } else {
+    try {
+      const mockSaved = JSON.parse(localStorage.getItem('soundmax_saved_sites') || '{}');
+      sites = Object.entries(mockSaved).map(([domain, data]) => ({
+        domain,
+        volume: data.volume || 100,
+        eq: data.eq || null,
+        updatedAt: data.updatedAt || Date.now()
+      }));
+    } catch (e) {}
+  }
+
+  if (lblSavedSitesCount) {
+    if (sites.length === 1) {
+      lblSavedSitesCount.textContent = t.saved_sites_title_single;
+    } else {
+      lblSavedSitesCount.textContent = t.saved_sites_title_plural.replace('{count}', sites.length);
+    }
+  }
+
+  savedSitesList.innerHTML = '';
+
+  if (sites.length === 0) {
+    const emptyDiv = document.createElement('div');
+    emptyDiv.className = 'saved-sites-empty';
+    emptyDiv.textContent = t.saved_sites_empty;
+    savedSitesList.appendChild(emptyDiv);
+    return;
+  }
+
+  sites.forEach(site => {
+    const item = document.createElement('div');
+    item.className = 'saved-site-item';
+
+    const info = document.createElement('div');
+    info.className = 'saved-site-info';
+
+    const domainSpan = document.createElement('span');
+    domainSpan.className = 'saved-site-domain';
+    domainSpan.textContent = site.domain;
+    domainSpan.title = site.domain;
+
+    const badges = document.createElement('div');
+    badges.className = 'saved-site-badges';
+
+    const volPill = document.createElement('span');
+    volPill.className = 'saved-site-vol-pill';
+    volPill.textContent = `${site.volume}%`;
+    badges.appendChild(volPill);
+
+    if (site.eq && site.eq.preset && site.eq.preset !== 'flat') {
+      const eqPill = document.createElement('span');
+      eqPill.className = 'saved-site-eq-pill';
+      eqPill.textContent = getPresetDisplayName(site.eq.preset);
+      eqPill.title = `Preset: ${eqPill.textContent}`;
+      badges.appendChild(eqPill);
+    }
+
+    info.appendChild(domainSpan);
+    info.appendChild(badges);
+
+    const delBtn = document.createElement('button');
+    delBtn.className = 'saved-site-delete-btn';
+    delBtn.textContent = '✕';
+    delBtn.title = `Hapus ${site.domain}`;
+    delBtn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      await removeSavedSiteItem(site.domain);
+    });
+
+    item.appendChild(info);
+    item.appendChild(delBtn);
+    savedSitesList.appendChild(item);
+  });
+}
+
+async function removeSavedSiteItem(domain) {
+  if (isExtension) {
+    await chrome.runtime.sendMessage({
+      type: 'REMOVE_SAVED_SITE',
+      domain
+    }).catch(() => {});
+  } else {
+    let mockSaved = JSON.parse(localStorage.getItem('soundmax_saved_sites') || '{}');
+    delete mockSaved[domain];
+    localStorage.setItem('soundmax_saved_sites', JSON.stringify(mockSaved));
+  }
+
+  if (appState.domain === domain) {
+    appState.savedSite = null;
+    appState.savedDomainVolume = null;
+    updateSiteStatusUI();
+  }
+
+  await renderSavedSitesList();
+}
+
+async function clearAllSavedSitesHandler() {
+  const t = TRANSLATIONS[appState.language] || TRANSLATIONS.id;
+  if (!confirm(t.delete_all_confirm)) return;
+
+  if (isExtension) {
+    await chrome.runtime.sendMessage({ type: 'CLEAR_ALL_SAVED_SITES' }).catch(() => {});
+  } else {
+    localStorage.removeItem('soundmax_saved_sites');
+  }
+
+  appState.savedSite = null;
+  appState.savedDomainVolume = null;
+  updateSiteStatusUI();
+  await renderSavedSitesList();
+}
+
+async function exportBackupHandler() {
+  let backupData = {};
+  if (isExtension) {
+    try {
+      backupData = await chrome.storage.local.get(null);
+    } catch (e) {}
+  } else {
+    backupData = {
+      theme: appState.theme,
+      language: appState.language,
+      globalDefaultVolume: appState.globalDefaultVolume,
+      turboMode: appState.turboMode,
+      antiDistortion: appState.antiDistortion,
+      popupMode: appState.popupMode,
+      wheelScrollEnabled: appState.wheelScrollEnabled,
+      soundmax_custom_presets: userCustomPresets,
+      savedSites: JSON.parse(localStorage.getItem('soundmax_saved_sites') || '{}')
+    };
+  }
+
+  const exportPayload = {
+    version: '1.2.0',
+    app: 'SoundMax',
+    exportedAt: new Date().toISOString(),
+    theme: backupData.theme || appState.theme,
+    language: backupData.language || appState.language,
+    globalDefaultVolume: backupData.globalDefaultVolume || appState.globalDefaultVolume,
+    turboMode: !!backupData.turboMode,
+    antiDistortion: backupData.antiDistortion !== undefined ? backupData.antiDistortion : true,
+    popupMode: backupData.popupMode || appState.popupMode,
+    wheelScrollEnabled: backupData.wheelScrollEnabled !== undefined ? backupData.wheelScrollEnabled : true,
+    rememberDomains: backupData.rememberDomains !== undefined ? backupData.rememberDomains : true,
+    soundmax_custom_presets: backupData.soundmax_custom_presets || userCustomPresets,
+    savedSites: backupData.savedSites || {},
+    domainVolumes: backupData.domainVolumes || {}
+  };
+
+  const jsonStr = JSON.stringify(exportPayload, null, 2);
+  const blob = new Blob([jsonStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const dateStr = new Date().toISOString().slice(0, 10);
+  const filename = `soundmax-backup-${dateStr}.json`;
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+async function handleBackupFileSelected(e) {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+
+  const t = TRANSLATIONS[appState.language] || TRANSLATIONS.id;
+
+  const reader = new FileReader();
+  reader.onload = async (event) => {
+    try {
+      const data = JSON.parse(event.target.result);
+      if (!data || typeof data !== 'object') {
+        alert(t.backup_restore_invalid);
+        return;
+      }
+
+      if (isExtension) {
+        await chrome.runtime.sendMessage({
+          type: 'IMPORT_BACKUP_DATA',
+          backup: data
+        });
+      } else {
+        if (data.theme) localStorage.setItem('soundmax_theme', data.theme);
+        if (data.language) localStorage.setItem('soundmax_lang', data.language);
+        if (data.savedSites) localStorage.setItem('soundmax_saved_sites', JSON.stringify(data.savedSites));
+        if (data.soundmax_custom_presets) localStorage.setItem('soundmax_custom_presets', JSON.stringify(data.soundmax_custom_presets));
+      }
+
+      await loadPreferences();
+      await loadCustomPresets();
+      await refreshTabState();
+      await renderSavedSitesList();
+
+      alert(t.backup_restore_success);
+    } catch (err) {
+      alert(t.backup_restore_invalid);
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+/* =========================================================
    Event Listeners
 ========================================================= */
 function initEventListeners() {
@@ -1649,6 +2073,7 @@ function initEventListeners() {
   // Settings Modal Handlers
   btnSettings.addEventListener('click', () => {
     modalSettings.style.display = 'flex';
+    renderSavedSitesList();
   });
   btnCloseModal.addEventListener('click', () => {
     modalSettings.style.display = 'none';
@@ -1669,15 +2094,59 @@ function initEventListeners() {
         rememberDomains: settingRememberDomains.checked,
         antiDistortion: limiter,
         popupMode: chosenMode,
-        wheelScrollEnabled: wheelEnabled
+        wheelScrollEnabled: wheelEnabled,
+        globalDefaultVolume: appState.globalDefaultVolume
       });
+      chrome.runtime.sendMessage({
+        type: 'SET_GLOBAL_DEFAULT_VOLUME',
+        volume: appState.globalDefaultVolume
+      }).catch(() => {});
     } else {
       localStorage.setItem('soundmax_turbo', turbo ? 'true' : 'false');
       localStorage.setItem('soundmax_anti_distortion', limiter ? 'true' : 'false');
       localStorage.setItem('soundmax_popup_mode', chosenMode);
       localStorage.setItem('soundmax_wheel_scroll', wheelEnabled ? 'true' : 'false');
+      localStorage.setItem('soundmax_default_vol', appState.globalDefaultVolume);
     }
   });
+
+  // Site Default Action Listeners
+  if (btnSaveSiteDefault) {
+    btnSaveSiteDefault.addEventListener('click', () => saveCurrentAsSiteDefault());
+  }
+  if (btnMiniSiteDefault) {
+    btnMiniSiteDefault.addEventListener('click', () => saveCurrentAsSiteDefault());
+  }
+
+  // Settings Default Volume Slider & Input
+  if (settingDefaultVolSlider) {
+    settingDefaultVolSlider.addEventListener('input', (e) => {
+      updateDefaultVolUI(parseInt(e.target.value, 10));
+    });
+  }
+  if (settingDefaultVolInput) {
+    settingDefaultVolInput.addEventListener('change', (e) => {
+      updateDefaultVolUI(parseInt(e.target.value, 10));
+    });
+  }
+
+  // Backup & Restore Handlers
+  if (btnBackupExport) {
+    btnBackupExport.addEventListener('click', () => exportBackupHandler());
+  }
+  if (btnBackupImport) {
+    btnBackupImport.addEventListener('click', () => {
+      if (fileInputBackup) fileInputBackup.click();
+    });
+  }
+  if (fileInputBackup) {
+    fileInputBackup.addEventListener('change', handleBackupFileSelected);
+  }
+
+  // Saved Sites Manager
+  if (btnDeleteAllSites) {
+    btnDeleteAllSites.addEventListener('click', () => clearAllSavedSitesHandler());
+  }
 
   // Rating Stars
   ratingStars.addEventListener('click', () => {

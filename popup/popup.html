@@ -48,6 +48,9 @@
       <button id="btn-mini-mute" class="mini-btn-action" title="Mute / Turn Off Tab">
         <span id="mini-mute-label">Turn Off</span>
       </button>
+      <button id="btn-mini-site-default" class="mini-btn-action site-pill" title="Jadikan default untuk situs ini">
+        <span id="lbl-mini-site-default">⭐ Situs</span>
+      </button>
       <button id="btn-mini-reset" class="mini-btn-action" title="Kembalikan ke 100%">
         <span>↺ 100%</span>
       </button>
@@ -114,6 +117,21 @@
         <span class="tip-desc" id="tip-desc">Ketik <code class="tip-code">chrome://extensions/shortcuts</code> di address bar untuk mengatur shortcut SoundMax.</span>
       </div>
       <button id="btn-close-tip" class="tip-close-btn" title="Tutup tips">×</button>
+    </div>
+
+    <!-- Active Site Profile Strip -->
+    <div id="site-status-strip" class="site-status-strip">
+      <div class="site-info-wrap">
+        <span class="site-globe-icon">🌐</span>
+        <span id="site-domain-name" class="site-domain-name" title="Domain website saat ini">Domain</span>
+      </div>
+      <div class="site-status-actions">
+        <span id="site-saved-badge" class="site-saved-badge" style="display: none;">✓ 100%</span>
+        <button id="btn-save-site-default" class="site-action-btn" title="Simpan volume & EQ saat ini sebagai default website ini">
+          <span id="site-btn-icon">⭐</span>
+          <span id="lbl-save-site-default">Default Situs</span>
+        </button>
+      </div>
     </div>
 
 
@@ -404,6 +422,55 @@
           </label>
         </div>
 
+        <!-- Default Volume for New Sites -->
+        <div class="settings-group">
+          <div class="settings-group-header">
+            <div>
+              <h4 id="lbl-settings-default-vol-title">🔊 Default volume</h4>
+              <span class="setting-desc" id="lbl-settings-default-vol-desc">Untuk situs yang belum memiliki pengaturan tersimpan</span>
+            </div>
+            <div class="setting-input-badge">
+              <input type="number" id="setting-default-vol-input" min="0" max="600" step="5" value="100" class="number-input-small">
+              <span>%</span>
+            </div>
+          </div>
+          <div class="slider-track-wrap settings-slider-wrap">
+            <input type="range" id="setting-default-vol-slider" min="0" max="600" step="5" value="100" class="custom-slider">
+            <div id="setting-default-vol-fill" class="slider-fill-bar"></div>
+          </div>
+        </div>
+
+        <!-- Backup & Restore Group -->
+        <div class="settings-group">
+          <h4 id="lbl-settings-backup-title">📦 Backup & Restore</h4>
+          <span class="setting-desc" id="lbl-settings-backup-desc">Ekspor pengaturan & situs tersimpan ke file, atau pulihkan dari cadangan</span>
+          <div class="backup-actions-row">
+            <button id="btn-backup-export" class="backup-btn export-btn" title="Unduh file backup JSON">
+              <span>📤</span> <span id="lbl-btn-export">Export</span>
+            </button>
+            <button id="btn-backup-import" class="backup-btn import-btn" title="Pulihkan pengaturan dari file JSON">
+              <span>📥</span> <span id="lbl-btn-import">Import</span>
+            </button>
+            <input type="file" id="file-input-backup" accept=".json" style="display:none;">
+          </div>
+        </div>
+
+        <!-- Saved Sites Manager Group -->
+        <div class="settings-group saved-sites-section">
+          <div class="saved-sites-header">
+            <div>
+              <h4 id="lbl-saved-sites-count">0 saved site</h4>
+              <span class="setting-desc" id="lbl-saved-sites-desc">Situs dengan pengaturan volume atau EQ kustom</span>
+            </div>
+            <button id="btn-delete-all-sites" class="btn-delete-all" title="Hapus semua situs tersimpan">
+              <span id="lbl-btn-delete-all">Delete All</span>
+            </button>
+          </div>
+          <div id="saved-sites-list" class="saved-sites-list">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
         <div class="settings-group">
           <h4 id="lbl-settings-shortcuts-title">⌨️ Tombol Pintas Keyboard</h4>
           <div class="shortcut-item">
@@ -430,7 +497,7 @@
 
         <!-- Creator Watermark Badge -->
         <div class="settings-author-badge">
-          <span>SoundMax Studio v1.1.0 • Created with ❤️ by <a href="https://github.com/Pikurii" target="_blank" rel="noopener noreferrer" class="author-link" id="link-settings-creator">Pikuri</a></span>
+          <span>SoundMax Studio v1.2.0 • Created with ❤️ by <a href="https://github.com/Pikurii" target="_blank" rel="noopener noreferrer" class="author-link" id="link-settings-creator">Pikuri</a></span>
         </div>
       </div>
       <div class="modal-footer">

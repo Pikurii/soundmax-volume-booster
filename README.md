@@ -26,8 +26,16 @@ Engineered with a **Zero-Leak & 0.0% Idle CPU** architecture (*hardware AudioCon
 
 ## ✨ Features & Highlights
 
+- **⭐ Site-Specific Volume & EQ Defaults**:
+  - Click **"Default Situs"** on any website (e.g. `youtube.com`) to save your preferred volume and active EQ curve specifically for that domain. SoundMax automatically applies them whenever you open or return to that site!
+- **🔊 Global Default Volume for Unvisited Sites**:
+  - Configure a custom fallback volume (e.g. 100%, 120%) in Settings so newly opened websites start at your preferred listening level.
+- **📦 Backup & Restore (JSON Export & Import)**:
+  - Easily export all your custom EQ presets, volume preferences, and saved domain profiles to a portable `.json` file, or restore them anytime with 1-click import.
+- **📋 Saved Sites Profile Manager**:
+  - View, audit, and manage all your site overrides in Settings. Remove individual site rules with the `✕` button or wipe all overrides with `Delete All`.
 - **📐 Dual View Mode (Mini & Studio)**:
-  - **Mini Mode (Compact)**: Ultra-compact view (~250px × 95px) for lightning-fast volume adjustments, one-click Turn Off / On, 100% Reset, and expand button.
+  - **Mini Mode (Compact)**: Ultra-compact view (~250px × 95px) for lightning-fast volume adjustments, site default toggle, one-click Turn Off / On, 100% Reset, and expand button.
   - **Studio Mode (Full)**: Comprehensive control center with the full 5-band studio parametric equalizer, visualizer, quick boost presets, and live audible tab switcher.
 - **🖱️ Mouse Wheel Volume Scrolling**:
   - Hover your cursor over the volume slider area and scroll your mouse wheel to adjust volume up or down in 5% increments.

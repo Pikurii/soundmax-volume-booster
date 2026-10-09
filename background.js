@@ -214,10 +214,29 @@ async function getTabState(tabId) {
     }
   } catch (e) {}
 
+  let initialVolume = 100;
+  let initialEq = { b60: 0, b250: 0, b1k: 0, b4k: 0, b12k: 0, bass: 0, mid: 0, treble: 0, preset: 'flat' };
+
+  try {
+    const { savedSites = {}, domainVolumes = {}, globalDefaultVolume = 100, rememberDomains = true } =
+      await chrome.storage.local.get(['savedSites', 'domainVolumes', 'globalDefaultVolume', 'rememberDomains']);
+
+    if (rememberDomains && domain && savedSites[domain]) {
+      initialVolume = (savedSites[domain].volume !== undefined) ? savedSites[domain].volume : 100;
+      if (savedSites[domain].eq) {
+        initialEq = { ...initialEq, ...savedSites[domain].eq };
+      }
+    } else if (rememberDomains && domain && domainVolumes[domain] !== undefined) {
+      initialVolume = domainVolumes[domain];
+    } else if (typeof globalDefaultVolume === 'number' && globalDefaultVolume !== 100) {
+      initialVolume = globalDefaultVolume;
+    }
+  } catch (e) {}
+
   const state = {
-    volume: 100,
+    volume: initialVolume,
     isMuted,
-    eq: { b60: 0, b250: 0, b1k: 0, b4k: 0, b12k: 0, bass: 0, mid: 0, treble: 0, preset: 'flat' },
+    eq: initialEq,
     isCaptured: false,
     antiDistortion: true,
     domain
@@ -227,23 +246,70 @@ async function getTabState(tabId) {
   return state;
 }
 
+async function saveSiteProfile(domain, volume, eq) {
+  if (!domain) return;
+  try {
+    const { savedSites = {}, domainVolumes = {} } = await chrome.storage.local.get(['savedSites', 'domainVolumes']);
+    savedSites[domain] = {
+      volume,
+      eq: eq ? { ...eq } : null,
+      updatedAt: Date.now()
+    };
+    domainVolumes[domain] = volume;
+    await chrome.storage.local.set({ savedSites, domainVolumes });
+  } catch (err) {}
+}
+
+async function removeSavedSite(domain) {
+  if (!domain) return;
+  try {
+    const { savedSites = {}, domainVolumes = {} } = await chrome.storage.local.get(['savedSites', 'domainVolumes']);
+    delete savedSites[domain];
+    delete domainVolumes[domain];
+    await chrome.storage.local.set({ savedSites, domainVolumes });
+  } catch (err) {}
+}
+
+async function clearAllSavedSites() {
+  try {
+    await chrome.storage.local.set({ savedSites: {}, domainVolumes: {} });
+  } catch (err) {}
+}
+
+async function getSavedSite(domain) {
+  if (!domain) return null;
+  try {
+    const { savedSites = {}, domainVolumes = {} } = await chrome.storage.local.get(['savedSites', 'domainVolumes']);
+    if (savedSites[domain]) {
+      return savedSites[domain];
+    }
+    if (domainVolumes[domain] !== undefined) {
+      return { volume: domainVolumes[domain], eq: null, updatedAt: Date.now() };
+    }
+    return null;
+  } catch (err) {
+    return null;
+  }
+}
+
 async function saveDomainVolume(domain, volume) {
   if (!domain) return;
   try {
-    const { domainVolumes = {} } = await chrome.storage.local.get('domainVolumes');
+    const { domainVolumes = {}, savedSites = {} } = await chrome.storage.local.get(['domainVolumes', 'savedSites']);
     domainVolumes[domain] = volume;
-    await chrome.storage.local.set({ domainVolumes });
+    if (savedSites[domain]) {
+      savedSites[domain].volume = volume;
+      savedSites[domain].updatedAt = Date.now();
+      await chrome.storage.local.set({ domainVolumes, savedSites });
+    } else {
+      await chrome.storage.local.set({ domainVolumes });
+    }
   } catch (err) {}
 }
 
 async function getSavedDomainVolume(domain) {
-  if (!domain) return null;
-  try {
-    const { domainVolumes = {} } = await chrome.storage.local.get('domainVolumes');
-    return domainVolumes[domain] || null;
-  } catch (err) {
-    return null;
-  }
+  const site = await getSavedSite(domain);
+  return site ? site.volume : null;
 }
 
 // Runtime Message Listener
@@ -295,11 +361,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
         await updateBadge(tabId, state.volume, state.isMuted);
 
-        const savedDomainVolume = await getSavedDomainVolume(state.domain);
+        const savedSite = await getSavedSite(state.domain);
+        const { globalDefaultVolume = 100 } = await chrome.storage.local.get('globalDefaultVolume');
         return {
           ...state,
           tabId,
-          savedDomainVolume
+          savedSite,
+          savedDomainVolume: savedSite ? savedSite.volume : null,
+          globalDefaultVolume
         };
       }
 
@@ -554,6 +623,63 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           state.isCaptured = false;
           updateBadge(message.tabId, 100, false);
         }
+        return { success: true };
+      }
+
+      case 'SAVE_SITE_PROFILE': {
+        const { domain, volume, eq } = message;
+        await saveSiteProfile(domain, volume, eq);
+        return { success: true, savedSite: await getSavedSite(domain) };
+      }
+
+      case 'REMOVE_SAVED_SITE': {
+        const { domain } = message;
+        await removeSavedSite(domain);
+        return { success: true };
+      }
+
+      case 'CLEAR_ALL_SAVED_SITES': {
+        await clearAllSavedSites();
+        return { success: true };
+      }
+
+      case 'GET_SAVED_SITES': {
+        const { savedSites = {} } = await chrome.storage.local.get('savedSites');
+        const list = Object.entries(savedSites).map(([domain, data]) => ({
+          domain,
+          volume: data.volume || 100,
+          eq: data.eq || null,
+          updatedAt: data.updatedAt || Date.now()
+        }));
+        return list;
+      }
+
+      case 'SET_GLOBAL_DEFAULT_VOLUME': {
+        const { volume } = message;
+        const validVol = Math.max(0, Math.min(800, volume));
+        await chrome.storage.local.set({ globalDefaultVolume: validVol });
+        return { success: true, globalDefaultVolume: validVol };
+      }
+
+      case 'IMPORT_BACKUP_DATA': {
+        const { backup } = message;
+        if (!backup || typeof backup !== 'object') {
+          return { success: false, error: 'Invalid backup object' };
+        }
+        const toStore = {};
+        if (backup.theme) toStore.theme = backup.theme;
+        if (backup.language) toStore.language = backup.language;
+        if (typeof backup.globalDefaultVolume === 'number') toStore.globalDefaultVolume = backup.globalDefaultVolume;
+        if (typeof backup.turboMode === 'boolean') toStore.turboMode = backup.turboMode;
+        if (typeof backup.antiDistortion === 'boolean') toStore.antiDistortion = backup.antiDistortion;
+        if (typeof backup.wheelScrollEnabled === 'boolean') toStore.wheelScrollEnabled = backup.wheelScrollEnabled;
+        if (backup.popupMode) toStore.popupMode = backup.popupMode;
+        if (typeof backup.rememberDomains === 'boolean') toStore.rememberDomains = backup.rememberDomains;
+        if (backup.savedSites) toStore.savedSites = backup.savedSites;
+        if (backup.domainVolumes) toStore.domainVolumes = backup.domainVolumes;
+        if (Array.isArray(backup.soundmax_custom_presets)) toStore.soundmax_custom_presets = backup.soundmax_custom_presets;
+
+        await chrome.storage.local.set(toStore);
         return { success: true };
       }
 
