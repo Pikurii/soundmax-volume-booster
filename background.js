@@ -20,9 +20,68 @@ function extractDomain(urlStr) {
   }
 }
 
-// Pre-warmed Offscreen Document
+// Idle Lifecycle Management for Offscreen Document (Zero-Leak & Zero Idle RAM)
+let offscreenIdleTimer = null;
+const OFFSCREEN_IDLE_TIMEOUT_MS = 20000; // 20 seconds idle grace period
+
+function cancelOffscreenIdleShutdown() {
+  if (offscreenIdleTimer) {
+    clearTimeout(offscreenIdleTimer);
+    offscreenIdleTimer = null;
+  }
+}
+
+function scheduleOffscreenIdleShutdown() {
+  cancelOffscreenIdleShutdown();
+
+  // If any tab is captured or in-flight, do not shut down
+  const hasCapturedTab = Array.from(tabStates.values()).some(s => s.isCaptured);
+  if (hasCapturedTab || capturingTabs.size > 0) {
+    return;
+  }
+
+  offscreenIdleTimer = setTimeout(async () => {
+    offscreenIdleTimer = null;
+    await closeOffscreenIfIdle();
+  }, OFFSCREEN_IDLE_TIMEOUT_MS);
+}
+
+async function closeOffscreenIfIdle() {
+  const hasCapturedTab = Array.from(tabStates.values()).some(s => s.isCaptured);
+  if (hasCapturedTab || capturingTabs.size > 0) {
+    return;
+  }
+
+  try {
+    const existingContexts = await chrome.runtime.getContexts({
+      contextTypes: ['OFFSCREEN_DOCUMENT']
+    });
+    if (!existingContexts || existingContexts.length === 0) {
+      return;
+    }
+
+    // Ping offscreen to verify active tab count
+    const res = await chrome.runtime.sendMessage({
+      target: 'offscreen',
+      type: 'PING'
+    }).catch(() => null);
+
+    if (res && res.activeTabs && res.activeTabs.length > 0) {
+      return; // Still has active audio processing
+    }
+
+    await chrome.offscreen.closeDocument();
+    console.log('[SoundMax] Offscreen document closed to reclaim memory (0.0% CPU & 0 MB RAM)');
+  } catch (err) {
+    // Already closed or not found
+  }
+}
+
+// On-demand Offscreen Document Lifecycle
 let creatingOffscreenPromise = null;
 async function ensureOffscreenDocument() {
+  cancelOffscreenIdleShutdown();
+
   const existingContexts = await chrome.runtime.getContexts({
     contextTypes: ['OFFSCREEN_DOCUMENT']
   });
@@ -76,6 +135,7 @@ async function isTabCapturedInOffscreen(tabId) {
 
 // Automatic Tab Audio Capture Helper with Concurrency Mutex
 async function startTabCapture(tabId, volume, isMuted, eq) {
+  cancelOffscreenIdleShutdown();
   const state = await getTabState(tabId);
 
   // If already active in offscreen, sync volume and return immediately
@@ -170,12 +230,12 @@ async function startTabCapture(tabId, volume, isMuted, eq) {
   return await capturePromise;
 }
 
-// Pre-warm offscreen document on service worker start
+// Zero-footprint startup initialization (Offscreen document created strictly on-demand)
 chrome.runtime.onInstalled.addListener(() => {
-  ensureOffscreenDocument().catch(() => {});
+  // Service worker installed - 0 MB idle RAM footprint
 });
 chrome.runtime.onStartup.addListener(() => {
-  ensureOffscreenDocument().catch(() => {});
+  // Browser opened - 0 MB idle RAM footprint
 });
 
 // Toolbar Badge Management
@@ -199,50 +259,58 @@ async function updateBadge(tabId, volume, isMuted) {
   } catch (err) {}
 }
 
-async function getTabState(tabId) {
-  if (tabStates.has(tabId)) {
-    return tabStates.get(tabId);
-  }
-
-  let domain = '';
-  let isMuted = false;
-  try {
-    const tab = await chrome.tabs.get(tabId);
-    domain = extractDomain(tab.url);
-    if (tab.mutedInfo && tab.mutedInfo.muted) {
-      isMuted = true;
-    }
-  } catch (e) {}
-
-  let initialVolume = 100;
-  let initialEq = { b60: 0, b250: 0, b1k: 0, b4k: 0, b12k: 0, bass: 0, mid: 0, treble: 0, preset: 'flat' };
-
+async function refreshTabStateFromStorage(tabId, state) {
   try {
     const { savedSites = {}, domainVolumes = {}, globalDefaultVolume = 100, rememberDomains = true } =
       await chrome.storage.local.get(['savedSites', 'domainVolumes', 'globalDefaultVolume', 'rememberDomains']);
 
+    const domain = state.domain;
     if (rememberDomains && domain && savedSites[domain]) {
-      initialVolume = (savedSites[domain].volume !== undefined) ? savedSites[domain].volume : 100;
+      state.volume = (savedSites[domain].volume !== undefined) ? savedSites[domain].volume : 100;
       if (savedSites[domain].eq) {
-        initialEq = { ...initialEq, ...savedSites[domain].eq };
+        state.eq = { ...state.eq, ...savedSites[domain].eq };
       }
     } else if (rememberDomains && domain && domainVolumes[domain] !== undefined) {
-      initialVolume = domainVolumes[domain];
-    } else if (typeof globalDefaultVolume === 'number' && globalDefaultVolume !== 100) {
-      initialVolume = globalDefaultVolume;
+      state.volume = domainVolumes[domain];
+    } else if (typeof globalDefaultVolume === 'number') {
+      state.volume = globalDefaultVolume;
+    }
+
+    await updateBadge(tabId, state.volume, state.isMuted);
+  } catch (e) {}
+}
+
+async function getTabState(tabId) {
+  let state = tabStates.get(tabId);
+  if (!state) {
+    state = {
+      volume: 100,
+      isMuted: false,
+      eq: { b60: 0, b250: 0, b1k: 0, b4k: 0, b12k: 0, bass: 0, mid: 0, treble: 0, preset: 'flat' },
+      isCaptured: false,
+      antiDistortion: true,
+      domain: '',
+      initializedFromStorage: false
+    };
+    tabStates.set(tabId, state);
+  }
+
+  try {
+    const tab = await chrome.tabs.get(tabId);
+    const currentDomain = extractDomain(tab.url);
+    if (tab.mutedInfo && tab.mutedInfo.muted !== undefined) {
+      state.isMuted = tab.mutedInfo.muted;
+    }
+    if (currentDomain && (!state.domain || state.domain !== currentDomain)) {
+      state.domain = currentDomain;
+      await refreshTabStateFromStorage(tabId, state);
+    } else if (!state.initializedFromStorage) {
+      state.domain = currentDomain;
+      await refreshTabStateFromStorage(tabId, state);
+      state.initializedFromStorage = true;
     }
   } catch (e) {}
 
-  const state = {
-    volume: initialVolume,
-    isMuted,
-    eq: initialEq,
-    isCaptured: false,
-    antiDistortion: true,
-    domain
-  };
-
-  tabStates.set(tabId, state);
   return state;
 }
 
@@ -279,14 +347,8 @@ async function clearAllSavedSites() {
 async function getSavedSite(domain) {
   if (!domain) return null;
   try {
-    const { savedSites = {}, domainVolumes = {} } = await chrome.storage.local.get(['savedSites', 'domainVolumes']);
-    if (savedSites[domain]) {
-      return savedSites[domain];
-    }
-    if (domainVolumes[domain] !== undefined) {
-      return { volume: domainVolumes[domain], eq: null, updatedAt: Date.now() };
-    }
-    return null;
+    const { savedSites = {} } = await chrome.storage.local.get('savedSites');
+    return savedSites[domain] || null;
   } catch (err) {
     return null;
   }
@@ -295,15 +357,11 @@ async function getSavedSite(domain) {
 async function saveDomainVolume(domain, volume) {
   if (!domain) return;
   try {
-    const { domainVolumes = {}, savedSites = {} } = await chrome.storage.local.get(['domainVolumes', 'savedSites']);
+    const { rememberDomains = false } = await chrome.storage.local.get('rememberDomains');
+    if (!rememberDomains) return;
+    const { domainVolumes = {} } = await chrome.storage.local.get('domainVolumes');
     domainVolumes[domain] = volume;
-    if (savedSites[domain]) {
-      savedSites[domain].volume = volume;
-      savedSites[domain].updatedAt = Date.now();
-      await chrome.storage.local.set({ domainVolumes, savedSites });
-    } else {
-      await chrome.storage.local.set({ domainVolumes });
-    }
+    await chrome.storage.local.set({ domainVolumes });
   } catch (err) {}
 }
 
@@ -319,7 +377,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   const handleMessage = async () => {
     switch (message.type) {
       case 'PREWARM_OFFSCREEN': {
+        cancelOffscreenIdleShutdown();
         await ensureOffscreenDocument();
+        return { success: true };
+      }
+
+      case 'POPUP_CLOSED': {
+        scheduleOffscreenIdleShutdown();
+        return { success: true };
+      }
+
+      case 'OFFSCREEN_ALL_TABS_STOPPED': {
+        scheduleOffscreenIdleShutdown();
         return { success: true };
       }
 
@@ -413,6 +482,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         const state = await getTabState(tabId);
         state.volume = Math.max(0, Math.min(800, volume));
 
+        // Automatically unmute tab in browser (Opera GX / Chrome) if volume > 0 or explicitly requested
+        if ((message.unmute === true || state.volume > 0) && state.isMuted) {
+          state.isMuted = false;
+          try {
+            await chrome.tabs.update(tabId, { muted: false });
+          } catch (e) {}
+        }
+
         // Synchronize capture state with offscreen if needed
         if (!state.isCaptured) {
           const inOffscreen = await isTabCapturedInOffscreen(tabId);
@@ -437,7 +514,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         await updateBadge(tabId, state.volume, state.isMuted);
         if (state.domain) saveDomainVolume(state.domain, state.volume);
 
-        return { success: true, volume: state.volume, isCaptured: state.isCaptured };
+        return { success: true, volume: state.volume, isCaptured: state.isCaptured, isMuted: state.isMuted };
       }
 
       case 'SET_MUTE': {
@@ -548,6 +625,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           }).catch(() => {});
           state.isCaptured = false;
         }
+        scheduleOffscreenIdleShutdown();
 
         await updateBadge(tabId, 100, false);
         return { success: true };
@@ -623,23 +701,79 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           state.isCaptured = false;
           updateBadge(message.tabId, 100, false);
         }
+        scheduleOffscreenIdleShutdown();
         return { success: true };
       }
 
       case 'SAVE_SITE_PROFILE': {
         const { domain, volume, eq } = message;
         await saveSiteProfile(domain, volume, eq);
+        // Synchronize all open tabs matching this domain
+        for (const [tabId, state] of tabStates.entries()) {
+          if (state.domain === domain) {
+            state.volume = volume;
+            if (eq) state.eq = { ...state.eq, ...eq };
+            await updateBadge(tabId, state.volume, state.isMuted);
+            if (state.isCaptured) {
+              chrome.runtime.sendMessage({
+                target: 'offscreen',
+                type: 'UPDATE_VOLUME',
+                tabId,
+                volume: state.volume,
+                isMuted: state.isMuted
+              }).catch(() => {});
+              if (eq) {
+                chrome.runtime.sendMessage({
+                  target: 'offscreen',
+                  type: 'UPDATE_EQ',
+                  tabId,
+                  eq: state.eq
+                }).catch(() => {});
+              }
+            }
+          }
+        }
         return { success: true, savedSite: await getSavedSite(domain) };
       }
 
       case 'REMOVE_SAVED_SITE': {
         const { domain } = message;
         await removeSavedSite(domain);
+        const { globalDefaultVolume = 100 } = await chrome.storage.local.get('globalDefaultVolume');
+        for (const [tabId, state] of tabStates.entries()) {
+          if (state.domain === domain) {
+            state.volume = globalDefaultVolume;
+            await updateBadge(tabId, state.volume, state.isMuted);
+            if (state.isCaptured) {
+              chrome.runtime.sendMessage({
+                target: 'offscreen',
+                type: 'UPDATE_VOLUME',
+                tabId,
+                volume: state.volume,
+                isMuted: state.isMuted
+              }).catch(() => {});
+            }
+          }
+        }
         return { success: true };
       }
 
       case 'CLEAR_ALL_SAVED_SITES': {
         await clearAllSavedSites();
+        const { globalDefaultVolume = 100 } = await chrome.storage.local.get('globalDefaultVolume');
+        for (const [tabId, state] of tabStates.entries()) {
+          state.volume = globalDefaultVolume;
+          await updateBadge(tabId, state.volume, state.isMuted);
+          if (state.isCaptured) {
+            chrome.runtime.sendMessage({
+              target: 'offscreen',
+              type: 'UPDATE_VOLUME',
+              tabId,
+              volume: state.volume,
+              isMuted: state.isMuted
+            }).catch(() => {});
+          }
+        }
         return { success: true };
       }
 
@@ -658,6 +792,28 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         const { volume } = message;
         const validVol = Math.max(0, Math.min(800, volume));
         await chrome.storage.local.set({ globalDefaultVolume: validVol });
+
+        const { savedSites = {}, domainVolumes = {} } =
+          await chrome.storage.local.get(['savedSites', 'domainVolumes']);
+
+        // Update all tabs in tabStates that don't have custom per-site settings
+        for (const [tabId, state] of tabStates.entries()) {
+          const hasCustom = state.domain && (savedSites[state.domain] || domainVolumes[state.domain] !== undefined);
+          if (!hasCustom) {
+            state.volume = validVol;
+            await updateBadge(tabId, state.volume, state.isMuted);
+            if (state.isCaptured) {
+              chrome.runtime.sendMessage({
+                target: 'offscreen',
+                type: 'UPDATE_VOLUME',
+                tabId,
+                volume: validVol,
+                isMuted: state.isMuted
+              }).catch(() => {});
+            }
+          }
+        }
+
         return { success: true, globalDefaultVolume: validVol };
       }
 
@@ -710,6 +866,7 @@ async function pruneStaleTabStates() {
       }).catch(() => {});
     }
   }
+  scheduleOffscreenIdleShutdown();
 }
 
 chrome.tabs.onRemoved.addListener((tabId) => {
@@ -720,6 +877,7 @@ chrome.tabs.onRemoved.addListener((tabId) => {
     tabId
   }).catch(() => {});
   tabStates.delete(tabId);
+  scheduleOffscreenIdleShutdown();
 });
 
 if (chrome.tabs.onReplaced) {
@@ -731,18 +889,75 @@ if (chrome.tabs.onReplaced) {
       tabId: removedTabId
     }).catch(() => {});
     tabStates.delete(removedTabId);
+    scheduleOffscreenIdleShutdown();
   });
 }
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  // 1. URL change: update domain and re-evaluate volume if domain changed
   if (changeInfo.url) {
     const state = tabStates.get(tabId);
     if (state) {
-      state.domain = extractDomain(changeInfo.url);
+      const newDomain = extractDomain(changeInfo.url);
+      if (newDomain !== state.domain) {
+        state.domain = newDomain;
+        await refreshTabStateFromStorage(tabId, state);
+      }
     }
   }
 
-  // Real-time synchronization when user clicks Mute / Unmute in Opera GX or browser tab header
+  // 2. Tab Reloading / Navigation Start: status === 'loading'
+  if (changeInfo.status === 'loading') {
+    const state = tabStates.get(tabId);
+    if (state) {
+      const currentUrl = changeInfo.url || tab?.url || '';
+      if (currentUrl) {
+        state.domain = extractDomain(currentUrl);
+      }
+      // Prepare smooth volume handoff in offscreen so initial reloaded audio does not spike
+      chrome.runtime.sendMessage({
+        target: 'offscreen',
+        type: 'TAB_RELOADING',
+        tabId
+      }).catch(() => {});
+
+      // Refresh target volume from storage
+      await refreshTabStateFromStorage(tabId, state);
+
+      // If target volume on the new page is standard 100% and EQ is flat, release capture
+      if (state.volume === 100 && state.isCaptured && (!state.eq || state.eq.preset === 'flat')) {
+        chrome.runtime.sendMessage({
+          target: 'offscreen',
+          type: 'STOP_CAPTURE',
+          tabId
+        }).catch(() => {});
+        state.isCaptured = false;
+        scheduleOffscreenIdleShutdown();
+      }
+    }
+  }
+
+  // 3. Tab playing audio: changeInfo.audible === true
+  if (changeInfo.audible === true) {
+    const state = await getTabState(tabId);
+    const live = await isTabCapturedInOffscreen(tabId);
+    if (live) {
+      state.isCaptured = true;
+      // Smoothly ramp volume from unity to target volume
+      chrome.runtime.sendMessage({
+        target: 'offscreen',
+        type: 'RESTORE_TAB_VOLUME',
+        tabId,
+        volume: state.volume
+      }).catch(() => {});
+    } else if (state.volume !== 100) {
+      // If not yet captured and target volume is non-100%, attempt capture
+      startTabCapture(tabId, state.volume, state.isMuted, state.eq).catch(() => {});
+    }
+    await updateBadge(tabId, state.volume, state.isMuted);
+  }
+
+  // 4. Real-time synchronization when user clicks Mute / Unmute in Opera GX or browser tab header
   if (changeInfo.mutedInfo !== undefined) {
     const state = await getTabState(tabId);
     const isMuted = !!changeInfo.mutedInfo.muted;

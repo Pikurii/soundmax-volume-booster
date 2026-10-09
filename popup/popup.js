@@ -13,6 +13,19 @@
 
 const isExtension = typeof chrome !== 'undefined' && chrome.runtime && !!chrome.runtime.id;
 
+// Modern SVG Micro-Icons for Dynamic UI
+const SVG_ICONS = {
+  star: '<svg class="btn-micro-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+  save: '<svg class="btn-micro-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>',
+  volumeMute: '<svg class="btn-micro-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>',
+  volumeHigh: '<svg class="btn-micro-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>',
+  miniVolumeLow: '<svg class="mini-speaker-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon></svg>',
+  miniVolumeMute: '<svg class="mini-speaker-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>',
+  music: '<svg class="tab-favicon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>',
+  cross: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>'
+};
+
 // Localization Dictionary
 const TRANSLATIONS = {
   id: {
@@ -31,21 +44,21 @@ const TRANSLATIONS = {
     anti_distortion_on: "Anti-Distorsi: Aktif",
     anti_distortion_off: "Anti-Distorsi: Nonaktif",
     anti_distortion_title: "Cegah suara pecah & distorsi saat volume tinggi (Klik untuk toggle)",
-    settings_limiter_title: "🛡️ Smart Limiter (Anti-Distorsi)",
+    settings_limiter_title: "Smart Limiter (Anti-Distorsi)",
     settings_limiter_desc: "Jaga kejernihan audio & cegah distorsi pecah di volume tinggi",
     
     // Mini Mode
-    mini_turn_off: "Turn Off",
-    mini_turn_on: "Turn On",
+    mini_turn_off: "Mute",
+    mini_turn_on: "Unmute",
     mini_reset: "Reset 100%",
-    mini_studio_btn: "🎛️ Studio",
+    mini_studio_btn: "Studio",
     btn_toggle_mini_title: "Mode Minimalis (Ringkas)",
     btn_expand_studio_title: "Perluas ke Mode Studio Lengkap (5-Band EQ)",
-    settings_mode_title: "📐 Mode Tampilan Default",
+    settings_mode_title: "Mode Tampilan Default",
     settings_mode_desc: "Pilih tampilan saat SoundMax dibuka",
     opt_mode_studio: "Mode Studio (Lengkap)",
     opt_mode_mini: "Mode Minimalis (Ringkas)",
-    settings_wheel_title: "🖱️ Scroll Mouse untuk Volume",
+    settings_wheel_title: "Scroll Mouse untuk Volume",
     settings_wheel_desc: "Putar roda mouse di area slider untuk atur volume",
     
     // Quick Buttons
@@ -108,7 +121,7 @@ const TRANSLATIONS = {
     tab_muted_badge: "Muted",
     
     // Modal: Save Preset
-    modal_save_title: "💾 Simpan Custom Preset EQ",
+    modal_save_title: "Simpan Custom Preset EQ",
     modal_save_desc: "Beri nama untuk konfigurasi 5-Band EQ saat ini:",
     modal_save_placeholder: "Contoh: Anime Mode, EDM Bass, Podcast Enak",
     btn_modal_cancel: "Batal",
@@ -117,29 +130,41 @@ const TRANSLATIONS = {
     
     // Modal: Settings
     settings_title: "Pengaturan SoundMax",
-    settings_lang_title: "🌐 Bahasa / Language",
+    settings_lang_title: "Bahasa / Language",
     settings_lang_desc: "Pilih bahasa antarmuka",
-    settings_turbo_title: "🚀 Turbo Mode (Hingga 800%)",
+    settings_turbo_title: "Turbo Mode (Hingga 800%)",
     settings_turbo_desc: "Izinkan penguatan ekstrem hingga 800%",
-    settings_memory_title: "💾 Memori Volume Per-Website",
+    settings_memory_title: "Memori Volume Per-Website",
     settings_memory_desc: "Ingat level volume favorit per domain situs",
-    settings_shortcuts_title: "⌨️ Tombol Pintas Keyboard",
+    settings_shortcuts_title: "Tombol Pintas Keyboard",
+    settings_shortcuts_desc: "Akses cepat kontrol volume langsung dari keyboard",
+    btn_configure_shortcuts: "Atur / Ubah Pintasan di Browser",
+    btn_configure_shortcuts_title: "Buka halaman pengaturan tombol pintas browser",
     sc_open_popup: "Buka popup SoundMax",
     sc_vol_up: "Tingkatkan volume +10%",
     sc_vol_down: "Kurangi volume -10%",
     sc_mute: "Toggle Mute / Unmute",
     sc_numbers: "Langsung meloncat ke 0% – 600%",
     btn_settings_done: "Selesai",
+    tab_general: "Audio & Umum",
+    tab_sites: "Situs & Cadangan",
+    tab_shortcuts: "Pintasan",
     
     // Site Default & Status Strip
-    site_default_btn: "Default Situs",
-    site_default_saved: "Tersimpan",
-    site_default_btn_title: "Jadikan volume & EQ saat ini sebagai default permanen situs ini",
-    mini_site_default: "⭐ Situs",
+    site_default_btn: "Simpan Default",
+    site_default_update: "Simpan {vol}",
+    site_default_synced: "Default: {vol}",
+    site_default_btn_title: "Jadikan {vol} sebagai volume default website ini",
+    site_default_update_title: "Perbarui default {domain} dari {oldVol} menjadi {newVol}",
+    site_default_synced_title: "Situs ini memakai default {vol}. Klik untuk menghapus.",
+    site_default_remove_title: "Hapus default untuk situs ini",
+    mini_site_default: "Situs",
+    mini_site_update: "{vol}",
+    mini_site_synced: "{vol}",
     mini_site_default_title: "Simpan default untuk situs ini",
-    settings_default_vol_title: "🔊 Default volume",
+    settings_default_vol_title: "Default Volume",
     settings_default_vol_desc: "Untuk situs yang belum memiliki pengaturan tersimpan",
-    settings_backup_title: "📦 Backup & Restore",
+    settings_backup_title: "Backup & Restore",
     settings_backup_desc: "Ekspor pengaturan & situs tersimpan ke file, atau pulihkan dari cadangan",
     btn_export: "Export",
     btn_import: "Import",
@@ -179,21 +204,21 @@ const TRANSLATIONS = {
     anti_distortion_on: "Anti-Distortion: ON",
     anti_distortion_off: "Anti-Distortion: OFF",
     anti_distortion_title: "Prevent harsh clipping & distortion at high volume (Click to toggle)",
-    settings_limiter_title: "🛡️ Smart Limiter (Anti-Distortion)",
+    settings_limiter_title: "Smart Limiter (Anti-Distortion)",
     settings_limiter_desc: "Maintain audio clarity and prevent harsh clipping at high volume",
     
     // Mini Mode
-    mini_turn_off: "Turn Off",
-    mini_turn_on: "Turn On",
+    mini_turn_off: "Mute",
+    mini_turn_on: "Unmute",
     mini_reset: "Reset 100%",
-    mini_studio_btn: "🎛️ Studio",
+    mini_studio_btn: "Studio",
     btn_toggle_mini_title: "Switch to Mini Mode",
     btn_expand_studio_title: "Expand to Full Studio Mode (5-Band EQ)",
-    settings_mode_title: "📐 Default Popup Mode",
+    settings_mode_title: "Default Popup Mode",
     settings_mode_desc: "Choose main view when opening SoundMax",
     opt_mode_studio: "Studio Mode (Full)",
     opt_mode_mini: "Mini Mode (Compact)",
-    settings_wheel_title: "🖱️ Mouse Wheel Volume",
+    settings_wheel_title: "Mouse Wheel Volume",
     settings_wheel_desc: "Scroll mouse wheel over slider area to adjust volume",
     
     // Quick Buttons
@@ -256,7 +281,7 @@ const TRANSLATIONS = {
     tab_muted_badge: "Muted",
     
     // Modal: Save Preset
-    modal_save_title: "💾 Save Custom EQ Preset",
+    modal_save_title: "Save Custom EQ Preset",
     modal_save_desc: "Name your current 5-Band EQ configuration:",
     modal_save_placeholder: "e.g. Anime Vocal Mode, EDM Bass, Podcast Master",
     btn_modal_cancel: "Cancel",
@@ -265,29 +290,41 @@ const TRANSLATIONS = {
     
     // Modal: Settings
     settings_title: "SoundMax Settings",
-    settings_lang_title: "🌐 Language / Bahasa",
+    settings_lang_title: "Language / Bahasa",
     settings_lang_desc: "Select interface language",
-    settings_turbo_title: "🚀 Turbo Mode (Up to 800%)",
+    settings_turbo_title: "Turbo Mode (Up to 800%)",
     settings_turbo_desc: "Allow extreme volume boost up to 800%",
-    settings_memory_title: "💾 Per-Website Volume Memory",
+    settings_memory_title: "Per-Website Volume Memory",
     settings_memory_desc: "Remember preferred volume levels per website domain",
-    settings_shortcuts_title: "⌨️ Keyboard Shortcuts",
+    settings_shortcuts_title: "Keyboard Shortcuts",
+    settings_shortcuts_desc: "Quick volume controls without opening the extension popup",
+    btn_configure_shortcuts: "Configure Shortcuts in Browser",
+    btn_configure_shortcuts_title: "Open browser keyboard shortcuts configuration",
     sc_open_popup: "Open SoundMax popup",
     sc_vol_up: "Increase volume +10%",
     sc_vol_down: "Decrease volume -10%",
     sc_mute: "Toggle Mute / Unmute",
     sc_numbers: "Jump directly to 0% – 600%",
     btn_settings_done: "Done",
+    tab_general: "Audio & General",
+    tab_sites: "Sites & Backup",
+    tab_shortcuts: "Shortcuts",
     
     // Site Default & Status Strip
-    site_default_btn: "Site Default",
-    site_default_saved: "Saved",
-    site_default_btn_title: "Save current volume & EQ as persistent default for this site",
-    mini_site_default: "⭐ Site",
+    site_default_btn: "Save Default",
+    site_default_update: "Save {vol}",
+    site_default_synced: "Default: {vol}",
+    site_default_btn_title: "Save {vol} as default volume for this site",
+    site_default_update_title: "Update {domain} default from {oldVol} to {newVol}",
+    site_default_synced_title: "This site uses default {vol}. Click to remove.",
+    site_default_remove_title: "Remove default for this site",
+    mini_site_default: "Site",
+    mini_site_update: "{vol}",
+    mini_site_synced: "{vol}",
     mini_site_default_title: "Save default for this site",
-    settings_default_vol_title: "🔊 Default volume",
+    settings_default_vol_title: "Default Volume",
     settings_default_vol_desc: "For sites with no saved setting",
-    settings_backup_title: "📦 Backup & Restore",
+    settings_backup_title: "Backup & Restore",
     settings_backup_desc: "Export all settings and saved volumes to a file, or restore from a backup",
     btn_export: "Export",
     btn_import: "Import",
@@ -443,6 +480,7 @@ const siteSavedBadge = document.getElementById('site-saved-badge');
 const btnSaveSiteDefault = document.getElementById('btn-save-site-default');
 const siteBtnIcon = document.getElementById('site-btn-icon');
 const lblSaveSiteDefault = document.getElementById('lbl-save-site-default');
+const btnRemoveSiteDefault = document.getElementById('btn-remove-site-default');
 
 // Quick Action Boost Buttons
 const btnPresetVoice = document.getElementById('btn-preset-voice');
@@ -575,6 +613,20 @@ const btnDeleteAllSites = document.getElementById('btn-delete-all-sites');
 const lblBtnDeleteAll = document.getElementById('lbl-btn-delete-all');
 const savedSitesList = document.getElementById('saved-sites-list');
 
+// Settings Tabs Elements
+const tabBtnGeneral = document.getElementById('tab-btn-general');
+const tabBtnSites = document.getElementById('tab-btn-sites');
+const tabBtnShortcuts = document.getElementById('tab-btn-shortcuts');
+const lblTabGeneral = document.getElementById('lbl-tab-general');
+const lblTabSites = document.getElementById('lbl-tab-sites');
+const lblTabShortcuts = document.getElementById('lbl-tab-shortcuts');
+const paneGeneral = document.getElementById('pane-general');
+const paneSites = document.getElementById('pane-sites');
+const paneShortcuts = document.getElementById('pane-shortcuts');
+const btnConfigureShortcuts = document.getElementById('btn-configure-shortcuts');
+const lblBtnConfigureShortcuts = document.getElementById('lbl-btn-configure-shortcuts');
+const lblSettingsShortcutsDesc = document.getElementById('lbl-settings-shortcuts-desc');
+
 /* =========================================================
    Initialization
 ========================================================= */
@@ -607,6 +659,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         syncAllUI();
       }
+    });
+
+    // Notify background when popup closes to trigger idle resource recovery
+    window.addEventListener('pagehide', () => {
+      chrome.runtime.sendMessage({ type: 'POPUP_CLOSED' }).catch(() => {});
     });
   }
 
@@ -851,12 +908,20 @@ function applyLanguage(lang) {
   if (lblSettingsMemoryTitle) lblSettingsMemoryTitle.textContent = t.settings_memory_title;
   if (lblSettingsMemoryDesc) lblSettingsMemoryDesc.textContent = t.settings_memory_desc;
   if (lblSettingsShortcutsTitle) lblSettingsShortcutsTitle.textContent = t.settings_shortcuts_title;
+  if (lblSettingsShortcutsDesc) lblSettingsShortcutsDesc.textContent = t.settings_shortcuts_desc;
+  if (lblBtnConfigureShortcuts) lblBtnConfigureShortcuts.textContent = t.btn_configure_shortcuts;
+  if (btnConfigureShortcuts) btnConfigureShortcuts.title = t.btn_configure_shortcuts_title;
   if (scDescOpen) scDescOpen.textContent = t.sc_open_popup;
   if (scDescUp) scDescUp.textContent = t.sc_vol_up;
   if (scDescDown) scDescDown.textContent = t.sc_vol_down;
   if (scDescMute) scDescMute.textContent = t.sc_mute;
   if (scDescJump) scDescJump.textContent = t.sc_numbers;
   if (btnSaveSettings) btnSaveSettings.textContent = t.btn_settings_done;
+
+  // Settings Tabs
+  if (lblTabGeneral) lblTabGeneral.textContent = t.tab_general;
+  if (lblTabSites) lblTabSites.textContent = t.tab_sites;
+  if (lblTabShortcuts) lblTabShortcuts.textContent = t.tab_shortcuts;
 
   // Site Status & Action
   updateSiteStatusUI();
@@ -1069,6 +1134,7 @@ function handleVolumeChange(newVol, immediate = false) {
   }
   updateSliderUI(appState.volume);
   updatePresetHighlight();
+  updateSiteStatusUI();
 
   const now = Date.now();
 
@@ -1110,7 +1176,7 @@ function updateMuteUI(muted) {
   const t = TRANSLATIONS[appState.language] || TRANSLATIONS.id;
   if (muted) {
     btnMuteToggle.classList.add('muted-active');
-    muteIcon.textContent = '🔊';
+    if (muteIcon) muteIcon.innerHTML = SVG_ICONS.volumeHigh;
     muteLabel.textContent = t.unmute_tab;
     if (volumeInput) {
       volumeInput.value = 0;
@@ -1122,12 +1188,12 @@ function updateMuteUI(muted) {
     // Mini Mode sync
     if (miniMuteLabel) miniMuteLabel.textContent = t.mini_turn_on;
     if (btnMiniMute) btnMiniMute.classList.add('muted-active');
-    if (miniSpeakerLeftIcon) miniSpeakerLeftIcon.textContent = '🔇';
+    if (miniSpeakerLeftIcon) miniSpeakerLeftIcon.innerHTML = SVG_ICONS.miniVolumeMute;
     if (miniSliderFill) miniSliderFill.style.width = '0%';
     if (miniVolBadge) miniVolBadge.textContent = 'Muted';
   } else {
     btnMuteToggle.classList.remove('muted-active');
-    muteIcon.textContent = '🔇';
+    if (muteIcon) muteIcon.innerHTML = SVG_ICONS.volumeMute;
     muteLabel.textContent = t.mute_tab;
     if (volumeInput) {
       volumeInput.value = appState.volume;
@@ -1139,7 +1205,7 @@ function updateMuteUI(muted) {
     // Mini Mode sync
     if (miniMuteLabel) miniMuteLabel.textContent = t.mini_turn_off;
     if (btnMiniMute) btnMiniMute.classList.remove('muted-active');
-    if (miniSpeakerLeftIcon) miniSpeakerLeftIcon.textContent = '🔈';
+    if (miniSpeakerLeftIcon) miniSpeakerLeftIcon.innerHTML = SVG_ICONS.miniVolumeLow;
     if (miniVolBadge) miniVolBadge.textContent = `${appState.volume} %`;
   }
 }
@@ -1230,7 +1296,7 @@ function renderCustomPresetsDropdown(selectedId = null) {
   userCustomPresets.forEach((p) => {
     const opt = document.createElement('option');
     opt.value = p.id;
-    opt.textContent = `★ ${p.name}`;
+    opt.textContent = p.name;
     if (selectedId && p.id === selectedId) {
       opt.selected = true;
     }
@@ -1354,9 +1420,11 @@ function renderAudibleTabs(tabs) {
     if (tab.volume > 400) volClass = 'boosted-high';
     else if (tab.volume > 200) volClass = 'boosted-mid';
 
+    const musicIconHtml = SVG_ICONS.music;
+    const musicIconEscaped = musicIconHtml.replace(/"/g, '&quot;');
     const favIconHtml = tab.favIconUrl
-      ? `<img src="${tab.favIconUrl}" class="tab-favicon" alt="Icon" onerror="this.outerHTML='<span class=\\'tab-favicon-fallback\\'>🎵</span>'">`
-      : `<span class="tab-favicon-fallback">🎵</span>`;
+      ? `<img src="${tab.favIconUrl}" class="tab-favicon" alt="Icon" onerror="this.outerHTML='<span class=\\'tab-favicon-fallback\\'>${musicIconEscaped}</span>'">`
+      : `<span class="tab-favicon-fallback">${musicIconHtml}</span>`;
 
     const badgeText = tab.isMuted ? t.tab_muted_badge : `${tab.volume || 100} %`;
 
@@ -1417,42 +1485,98 @@ function updateSiteStatusUI() {
     siteDomainName.title = `Website: ${domain}`;
   }
 
-  const isSaved = !!(appState.savedSite && appState.savedSite.volume !== undefined);
+  const currentVol = appState.isMuted ? (appState.previousVolume || 100) : appState.volume;
+  const isSaved = !!(appState.savedSite && typeof appState.savedSite.volume === 'number');
+  const savedVol = isSaved ? appState.savedSite.volume : null;
+  const isSynced = isSaved && (savedVol === currentVol);
 
-  if (siteSavedBadge) {
-    if (isSaved) {
-      siteSavedBadge.style.display = 'inline-block';
-      let badgeText = `✓ ${appState.savedSite.volume}%`;
-      if (appState.savedSite.eq && appState.savedSite.eq.preset && appState.savedSite.eq.preset !== 'flat') {
-        badgeText += ` • ${getPresetDisplayName(appState.savedSite.eq.preset)}`;
+  // KONDISI 1: Belum disimpan sama sekali (mengikuti global default atau distel sementara)
+  if (!isSaved) {
+    if (siteSavedBadge) siteSavedBadge.style.display = 'none';
+    if (btnRemoveSiteDefault) btnRemoveSiteDefault.style.display = 'none';
+    const isDifferentFromGlobal = currentVol !== (appState.globalDefaultVolume || 100);
+    if (btnSaveSiteDefault) {
+      btnSaveSiteDefault.style.display = 'inline-flex';
+      if (isDifferentFromGlobal) {
+        btnSaveSiteDefault.className = 'site-action-btn needs-update';
+        if (siteBtnIcon) siteBtnIcon.innerHTML = SVG_ICONS.save;
+        if (lblSaveSiteDefault) {
+          lblSaveSiteDefault.textContent = t.site_default_update.replace('{vol}', `${currentVol}%`);
+        }
+        btnSaveSiteDefault.title = t.site_default_btn_title.replace('{vol}', `${currentVol}%`);
+      } else {
+        btnSaveSiteDefault.className = 'site-action-btn';
+        if (siteBtnIcon) siteBtnIcon.innerHTML = SVG_ICONS.star;
+        if (lblSaveSiteDefault) lblSaveSiteDefault.textContent = t.site_default_btn;
+        btnSaveSiteDefault.title = t.site_default_btn_title.replace('{vol}', `${currentVol}%`);
       }
-      siteSavedBadge.textContent = badgeText;
-      siteSavedBadge.title = `Default tersimpan: ${badgeText}`;
-    } else {
-      siteSavedBadge.style.display = 'none';
     }
+    if (btnMiniSiteDefault) {
+      if (isDifferentFromGlobal) {
+        btnMiniSiteDefault.className = 'mini-btn-action site-pill needs-update';
+        if (lblMiniSiteDefault) lblMiniSiteDefault.textContent = t.mini_site_update.replace('{vol}', `${currentVol}%`);
+      } else {
+        btnMiniSiteDefault.className = 'mini-btn-action site-pill';
+        if (lblMiniSiteDefault) lblMiniSiteDefault.textContent = t.mini_site_default;
+      }
+      btnMiniSiteDefault.title = t.mini_site_default_title;
+    }
+    return;
   }
 
+  // KONDISI 2: Sudah disimpan DAN volume saat ini sama persis (Synced)
+  if (isSynced) {
+    let eqLabel = '';
+    if (appState.savedSite.eq && appState.savedSite.eq.preset && appState.savedSite.eq.preset !== 'flat') {
+      eqLabel = ` • ${getPresetDisplayName(appState.savedSite.eq.preset)}`;
+    }
+
+    if (siteSavedBadge) {
+      siteSavedBadge.style.display = 'inline-flex';
+      siteSavedBadge.innerHTML = `${SVG_ICONS.check}<span>${t.site_default_synced.replace('{vol}', `${savedVol}%`) + eqLabel}</span>`;
+      siteSavedBadge.title = t.site_default_synced_title.replace('{vol}', `${savedVol}%`);
+    }
+    if (btnSaveSiteDefault) {
+      btnSaveSiteDefault.style.display = 'none';
+    }
+    if (btnRemoveSiteDefault) {
+      btnRemoveSiteDefault.style.display = 'inline-flex';
+      btnRemoveSiteDefault.title = t.site_default_remove_title;
+    }
+    if (btnMiniSiteDefault) {
+      btnMiniSiteDefault.className = 'mini-btn-action site-pill saved';
+      if (lblMiniSiteDefault) lblMiniSiteDefault.textContent = t.mini_site_synced.replace('{vol}', `${savedVol}%`);
+      btnMiniSiteDefault.title = t.site_default_synced_title.replace('{vol}', `${savedVol}%`);
+    }
+    return;
+  }
+
+  // KONDISI 3: Sudah pernah disimpan, TETAPI volume digeser ke angka baru (Out-of-Sync)
+  if (siteSavedBadge) {
+    siteSavedBadge.style.display = 'none';
+  }
+  if (btnRemoveSiteDefault) {
+    btnRemoveSiteDefault.style.display = 'none';
+  }
   if (btnSaveSiteDefault) {
-    if (isSaved) {
-      btnSaveSiteDefault.classList.add('saved');
-      if (lblSaveSiteDefault) lblSaveSiteDefault.textContent = t.site_default_saved;
-      if (siteBtnIcon) siteBtnIcon.textContent = '✓';
-    } else {
-      btnSaveSiteDefault.classList.remove('saved');
-      if (lblSaveSiteDefault) lblSaveSiteDefault.textContent = t.site_default_btn;
-      if (siteBtnIcon) siteBtnIcon.textContent = '⭐';
+    btnSaveSiteDefault.style.display = 'inline-flex';
+    btnSaveSiteDefault.className = 'site-action-btn needs-update';
+    if (siteBtnIcon) siteBtnIcon.innerHTML = SVG_ICONS.save;
+    if (lblSaveSiteDefault) {
+      lblSaveSiteDefault.textContent = t.site_default_update.replace('{vol}', `${currentVol}%`);
     }
-    btnSaveSiteDefault.title = t.site_default_btn_title;
+    btnSaveSiteDefault.title = t.site_default_update_title
+      .replace('{domain}', domain)
+      .replace('{oldVol}', `${savedVol}%`)
+      .replace('{newVol}', `${currentVol}%`);
   }
-
   if (btnMiniSiteDefault) {
-    if (isSaved) {
-      btnMiniSiteDefault.classList.add('saved');
-    } else {
-      btnMiniSiteDefault.classList.remove('saved');
-    }
-    btnMiniSiteDefault.title = t.mini_site_default_title;
+    btnMiniSiteDefault.className = 'mini-btn-action site-pill needs-update';
+    if (lblMiniSiteDefault) lblMiniSiteDefault.textContent = t.mini_site_update.replace('{vol}', `${currentVol}%`);
+    btnMiniSiteDefault.title = t.site_default_update_title
+      .replace('{domain}', domain)
+      .replace('{oldVol}', `${savedVol}%`)
+      .replace('{newVol}', `${currentVol}%`);
   }
 }
 
@@ -1571,7 +1695,7 @@ async function renderSavedSitesList() {
 
     const delBtn = document.createElement('button');
     delBtn.className = 'saved-site-delete-btn';
-    delBtn.textContent = '✕';
+    delBtn.innerHTML = SVG_ICONS.cross;
     delBtn.title = `Hapus ${site.domain}`;
     delBtn.addEventListener('click', async (e) => {
       e.stopPropagation();
@@ -1599,7 +1723,9 @@ async function removeSavedSiteItem(domain) {
   if (appState.domain === domain) {
     appState.savedSite = null;
     appState.savedDomainVolume = null;
-    updateSiteStatusUI();
+    appState.volume = appState.globalDefaultVolume || 100;
+    syncAllUI();
+    sendVolumeToBackground(appState.volume, appState.tabId);
   }
 
   await renderSavedSitesList();
@@ -1617,7 +1743,9 @@ async function clearAllSavedSitesHandler() {
 
   appState.savedSite = null;
   appState.savedDomainVolume = null;
-  updateSiteStatusUI();
+  appState.volume = appState.globalDefaultVolume || 100;
+  syncAllUI();
+  sendVolumeToBackground(appState.volume, appState.tabId);
   await renderSavedSitesList();
 }
 
@@ -1803,9 +1931,16 @@ function initEventListeners() {
 
     if (isExtension && appState.tabId) {
       await chrome.runtime.sendMessage({
+        type: 'SET_MUTE',
+        tabId: appState.tabId,
+        isMuted: false
+      }).catch(() => {});
+
+      await chrome.runtime.sendMessage({
         type: 'SET_VOLUME',
         tabId: appState.tabId,
-        volume: 160
+        volume: 160,
+        unmute: true
       }).catch(() => {});
 
       await chrome.runtime.sendMessage({
@@ -1826,9 +1961,16 @@ function initEventListeners() {
 
     if (isExtension && appState.tabId) {
       await chrome.runtime.sendMessage({
+        type: 'SET_MUTE',
+        tabId: appState.tabId,
+        isMuted: false
+      }).catch(() => {});
+
+      await chrome.runtime.sendMessage({
         type: 'SET_VOLUME',
         tabId: appState.tabId,
-        volume: 180
+        volume: 180,
+        unmute: true
       }).catch(() => {});
 
       await chrome.runtime.sendMessage({
@@ -1854,10 +1996,18 @@ function initEventListeners() {
 
     if (isExtension && appState.tabId) {
       await chrome.runtime.sendMessage({
+        type: 'SET_MUTE',
+        tabId: appState.tabId,
+        isMuted: false
+      }).catch(() => {});
+
+      await chrome.runtime.sendMessage({
         type: 'SET_VOLUME',
         tabId: appState.tabId,
-        volume: 100
+        volume: 100,
+        unmute: true
       }).catch(() => {});
+
       await chrome.runtime.sendMessage({
         type: 'SET_EQ',
         tabId: appState.tabId,
@@ -2023,10 +2173,18 @@ function initEventListeners() {
 
       if (isExtension && appState.tabId) {
         await chrome.runtime.sendMessage({
+          type: 'SET_MUTE',
+          tabId: appState.tabId,
+          isMuted: false
+        }).catch(() => {});
+
+        await chrome.runtime.sendMessage({
           type: 'SET_VOLUME',
           tabId: appState.tabId,
-          volume: 100
+          volume: 100,
+          unmute: true
         }).catch(() => {});
+
         await chrome.runtime.sendMessage({
           type: 'SET_EQ',
           tabId: appState.tabId,
@@ -2070,9 +2228,34 @@ function initEventListeners() {
     handleVolumeChange(targetVol, true);
   }, { passive: false });
 
+  // Settings Tab Navigation Switching
+  const settingsTabButtons = document.querySelectorAll('.settings-tab-btn');
+  const settingsTabPanes = document.querySelectorAll('.settings-tab-pane');
+  settingsTabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetPaneId = btn.getAttribute('data-tab');
+      settingsTabButtons.forEach(b => b.classList.remove('active'));
+      settingsTabPanes.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      const targetPane = document.getElementById(targetPaneId);
+      if (targetPane) {
+        targetPane.classList.add('active');
+      }
+      if (targetPaneId === 'pane-sites') {
+        renderSavedSitesList();
+      }
+    });
+  });
+
   // Settings Modal Handlers
   btnSettings.addEventListener('click', () => {
     modalSettings.style.display = 'flex';
+    // Ensure at least one tab is active
+    const hasActiveTab = Array.from(settingsTabButtons).some(b => b.classList.contains('active'));
+    if (!hasActiveTab && tabBtnGeneral && paneGeneral) {
+      tabBtnGeneral.classList.add('active');
+      paneGeneral.classList.add('active');
+    }
     renderSavedSitesList();
   });
   btnCloseModal.addEventListener('click', () => {
@@ -2101,18 +2284,36 @@ function initEventListeners() {
         type: 'SET_GLOBAL_DEFAULT_VOLUME',
         volume: appState.globalDefaultVolume
       }).catch(() => {});
+
+      if (!appState.savedSite && appState.savedDomainVolume === null) {
+        appState.volume = appState.globalDefaultVolume;
+        syncAllUI();
+      }
     } else {
       localStorage.setItem('soundmax_turbo', turbo ? 'true' : 'false');
       localStorage.setItem('soundmax_anti_distortion', limiter ? 'true' : 'false');
       localStorage.setItem('soundmax_popup_mode', chosenMode);
       localStorage.setItem('soundmax_wheel_scroll', wheelEnabled ? 'true' : 'false');
       localStorage.setItem('soundmax_default_vol', appState.globalDefaultVolume);
+
+      if (!appState.savedSite && appState.savedDomainVolume === null) {
+        appState.volume = appState.globalDefaultVolume;
+        syncAllUI();
+      }
     }
   });
 
   // Site Default Action Listeners
   if (btnSaveSiteDefault) {
     btnSaveSiteDefault.addEventListener('click', () => saveCurrentAsSiteDefault());
+  }
+  if (btnRemoveSiteDefault) {
+    btnRemoveSiteDefault.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (appState.domain) {
+        removeSavedSiteItem(appState.domain);
+      }
+    });
   }
   if (btnMiniSiteDefault) {
     btnMiniSiteDefault.addEventListener('click', () => saveCurrentAsSiteDefault());
@@ -2148,26 +2349,39 @@ function initEventListeners() {
     btnDeleteAllSites.addEventListener('click', () => clearAllSavedSitesHandler());
   }
 
-  // Rating Stars
-  ratingStars.addEventListener('click', () => {
-    const t = TRANSLATIONS[appState.language] || TRANSLATIONS.id;
-    if (isExtension) {
-      const extId = chrome.runtime.id;
-      window.open(`https://chromewebstore.google.com/detail/${extId}/reviews`, '_blank');
-    } else {
-      alert(t.rating_thank_you);
-    }
-  });
+  // Rating Stars (Optional)
+  if (ratingStars) {
+    ratingStars.addEventListener('click', () => {
+      const t = TRANSLATIONS[appState.language] || TRANSLATIONS.id;
+      if (isExtension) {
+        const extId = chrome.runtime.id;
+        window.open(`https://chromewebstore.google.com/detail/${extId}/reviews`, '_blank');
+      } else {
+        alert(t.rating_thank_you);
+      }
+    });
+  }
 
-  // Link Shortcuts
-  linkShortcuts.addEventListener('click', (e) => {
-    e.preventDefault();
+  // Open Browser Keyboard Shortcuts Settings (Standard Chromium URL)
+  const openShortcutsSettings = (e) => {
+    if (e) e.preventDefault();
     if (isExtension) {
       chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
     } else {
       modalSettings.style.display = 'flex';
+      if (tabBtnShortcuts) tabBtnShortcuts.click();
     }
-  });
+  };
+
+  // Link Shortcuts in footer (front)
+  if (linkShortcuts) {
+    linkShortcuts.addEventListener('click', openShortcutsSettings);
+  }
+
+  // Button Configure Shortcuts inside settings modal (shortcuts tab)
+  if (btnConfigureShortcuts) {
+    btnConfigureShortcuts.addEventListener('click', openShortcutsSettings);
+  }
 
   // Creator GitHub Profile Watermark Links
   const openCreatorProfile = (e) => {

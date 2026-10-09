@@ -34,28 +34,32 @@
     <!-- Mini Slider Strip -->
     <div class="mini-slider-row">
       <button id="btn-mini-mute-icon" class="mini-speaker-btn" title="Mute / Unmute">
-        <span id="mini-speaker-left-icon">🔈</span>
+        <span id="mini-speaker-left-icon">
+          <svg class="mini-speaker-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon></svg>
+        </span>
       </button>
       <div class="slider-track-wrap mini-slider-wrap">
         <input type="range" id="mini-volume-slider" min="0" max="600" step="1" value="100" class="custom-slider mini-slider">
         <div id="mini-slider-fill" class="slider-fill-bar"></div>
       </div>
-      <span class="mini-speaker-btn static-speaker" title="Max Boost">🔊</span>
+      <span class="mini-speaker-btn static-speaker" title="Max Boost">
+        <svg class="mini-speaker-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+      </span>
     </div>
 
     <!-- Mini Footer Actions -->
     <div class="mini-actions-row">
-      <button id="btn-mini-mute" class="mini-btn-action" title="Mute / Turn Off Tab">
-        <span id="mini-mute-label">Turn Off</span>
+      <button id="btn-mini-mute" class="mini-btn-action" title="Mute / Unmute Tab">
+        <span id="mini-mute-label">Mute</span>
       </button>
       <button id="btn-mini-site-default" class="mini-btn-action site-pill" title="Jadikan default untuk situs ini">
-        <span id="lbl-mini-site-default">⭐ Situs</span>
+        <span id="lbl-mini-site-default">Situs</span>
       </button>
       <button id="btn-mini-reset" class="mini-btn-action" title="Kembalikan ke 100%">
-        <span>↺ 100%</span>
+        <span>100%</span>
       </button>
       <button id="btn-mini-studio" class="mini-btn-action studio-pill" title="Mode Studio Lengkap">
-        <span id="lbl-mini-studio">🎛️ Studio</span>
+        <span id="lbl-mini-studio">Studio</span>
       </button>
     </div>
   </div>
@@ -93,8 +97,12 @@
         <label class="theme-switch" id="lbl-theme-switch" title="Ganti Mode Gelap / Terang">
           <input type="checkbox" id="theme-toggle">
           <span class="theme-slider">
-            <span class="theme-icon light-icon">☀️</span>
-            <span class="theme-icon dark-icon">🌙</span>
+            <span class="theme-icon light-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </span>
+            <span class="theme-icon dark-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </span>
           </span>
         </label>
         <!-- Settings Button -->
@@ -122,14 +130,21 @@
     <!-- Active Site Profile Strip -->
     <div id="site-status-strip" class="site-status-strip">
       <div class="site-info-wrap">
-        <span class="site-globe-icon">🌐</span>
+        <span class="site-globe-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+        </span>
         <span id="site-domain-name" class="site-domain-name" title="Domain website saat ini">Domain</span>
       </div>
-      <div class="site-status-actions">
-        <span id="site-saved-badge" class="site-saved-badge" style="display: none;">✓ 100%</span>
-        <button id="btn-save-site-default" class="site-action-btn" title="Simpan volume & EQ saat ini sebagai default website ini">
-          <span id="site-btn-icon">⭐</span>
-          <span id="lbl-save-site-default">Default Situs</span>
+      <div class="site-status-actions" id="site-status-actions">
+        <span id="site-saved-badge" class="site-saved-badge" style="display: none;">Default: 100%</span>
+        <button id="btn-save-site-default" class="site-action-btn" title="Simpan volume saat ini sebagai default website ini">
+          <span id="site-btn-icon">
+            <svg class="btn-micro-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </span>
+          <span id="lbl-save-site-default">Simpan Default</span>
+        </button>
+        <button id="btn-remove-site-default" class="site-remove-btn" title="Hapus default situs ini" style="display: none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
       </div>
     </div>
@@ -167,7 +182,9 @@
       <!-- Smart Anti-Distortion Pill Badge -->
       <div class="limiter-badge-container">
         <button id="btn-anti-distortion" class="limiter-pill active" title="Cegah suara pecah & distorsi saat volume tinggi (Klik untuk on/off)">
-          <span class="limiter-pill-icon">🛡️</span>
+          <span class="limiter-pill-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          </span>
           <span id="lbl-anti-distortion" class="limiter-pill-text">Anti-Distortion: ON</span>
         </button>
       </div>
@@ -176,11 +193,15 @@
     <!-- Quick Action Boost Buttons -->
     <section class="quick-actions-grid">
       <button id="btn-preset-voice" class="preset-btn" title="Kejelasan vokal & dialog podcast/anime">
-        <span class="btn-icon">🎙️</span>
+        <span class="btn-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+        </span>
         <span class="btn-label" id="lbl-preset-voice">Voice boost</span>
       </button>
       <button id="btn-preset-bass" class="preset-btn" title="Dentuman bass bertenaga & punchy">
-        <span class="btn-icon">🚀</span>
+        <span class="btn-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 10v4M6 6v12M10 3v18M14 8v8M18 5v14M22 10v4"></path></svg>
+        </span>
         <span class="btn-label" id="lbl-preset-bass">Bass boost</span>
       </button>
     </section>
@@ -188,11 +209,13 @@
     <!-- Quick Mute & Reset Strip -->
     <div class="quick-sub-actions">
       <button id="btn-mute-toggle" class="sub-action-btn" title="Senyapkan atau nyalakan suara">
-        <span id="mute-icon">🔇</span>
+        <span id="mute-icon">
+          <svg class="btn-micro-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+        </span>
         <span id="mute-label">Mute Tab</span>
       </button>
       <button id="btn-reset-standard" class="sub-action-btn reset-btn" title="Kembalikan volume ke 100%">
-        <span>↺</span>
+        <svg class="btn-micro-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
         <span id="lbl-reset-standard">Reset ke 100%</span>
       </button>
     </div>
@@ -201,10 +224,14 @@
     <section class="accordion-section">
       <button id="btn-toggle-eq" class="accordion-header" aria-expanded="false">
         <div class="acc-title-wrap">
-          <span class="acc-icon">🎛️</span>
+          <span class="acc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line></svg>
+          </span>
           <span class="acc-title" id="eq-header-title">Studio Equalizer (5-Band)</span>
         </div>
-        <span class="acc-chevron">▼</span>
+        <span class="acc-chevron">
+          <svg class="acc-chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </span>
       </button>
 
       <div id="eq-content" class="accordion-body" style="display: none;">
@@ -229,13 +256,16 @@
         <!-- Custom Preset Management Actions -->
         <div class="eq-actions-bar">
           <button id="btn-open-save-preset" class="eq-tool-btn save-btn" title="Simpan pengaturan EQ saat ini sebagai preset custom baru">
-            <span>💾</span> <span id="lbl-btn-save-preset">Simpan Preset</span>
+            <svg class="btn-micro-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            <span id="lbl-btn-save-preset">Simpan Preset</span>
           </button>
           <button id="btn-delete-preset" class="eq-tool-btn delete-btn" style="display:none;" title="Hapus preset custom yang dipilih">
-            <span>🗑️</span> <span id="lbl-btn-delete-preset">Hapus</span>
+            <svg class="btn-micro-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            <span id="lbl-btn-delete-preset">Hapus</span>
           </button>
           <button id="btn-reset-eq" class="eq-tool-btn flat-btn" title="Kembalikan semua slider EQ ke 0 dB">
-            <span>↺</span> <span id="lbl-btn-reset-eq">Reset ke Flat</span>
+            <svg class="btn-micro-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+            <span id="lbl-btn-reset-eq">Reset ke Flat</span>
           </button>
         </div>
 
@@ -321,13 +351,6 @@
 
     <!-- Footer -->
     <footer class="app-footer">
-      <div class="rating-stars" id="rating-stars" title="Beri Rating SoundMax 5 Bintang!">
-        <span class="star">★</span>
-        <span class="star">★</span>
-        <span class="star">★</span>
-        <span class="star">★</span>
-        <span class="star">★</span>
-      </div>
       <div class="footer-links">
         <a href="#" id="link-shortcuts">Keyboard Shortcuts</a>
         <span class="dot-separator">•</span>
@@ -341,7 +364,7 @@
   <div id="modal-save-preset" class="modal-backdrop" style="display:none;">
     <div class="modal-dialog small-dialog">
       <div class="modal-header">
-        <h3 id="lbl-modal-save-title">💾 Simpan Custom Preset EQ</h3>
+        <h3 id="lbl-modal-save-title">Simpan Custom Preset EQ</h3>
         <button id="btn-close-save-modal" class="modal-close-btn">×</button>
       </div>
       <div class="modal-body">
@@ -359,147 +382,229 @@
 
   <!-- Settings & Shortcuts Modal Dialog -->
   <div id="modal-settings" class="modal-backdrop" style="display:none;">
-    <div class="modal-dialog">
+    <div class="modal-dialog settings-modal-dialog">
       <div class="modal-header">
         <h3 id="lbl-modal-settings-title">Pengaturan SoundMax</h3>
         <button id="btn-close-modal" class="modal-close-btn">×</button>
       </div>
-      <div class="modal-body">
-        
-        <!-- Language Selector Group -->
-        <div class="settings-group">
-          <h4 id="lbl-settings-lang-title">🌐 Bahasa / Language</h4>
-          <div class="select-row">
-            <span class="setting-desc" id="lbl-settings-lang-desc">Pilih bahasa antarmuka</span>
-            <select id="setting-language" class="custom-select setting-select">
-              <option value="id">🇮🇩 Bahasa Indonesia</option>
-              <option value="en">🇺🇸 English</option>
-            </select>
-          </div>
-        </div>
 
-        <!-- View Mode Selector Group -->
-        <div class="settings-group">
-          <h4 id="lbl-settings-mode-title">📐 Mode Tampilan Default</h4>
-          <div class="select-row">
-            <span class="setting-desc" id="lbl-settings-mode-desc">Pilih tampilan utama saat popup dibuka</span>
-            <select id="setting-popup-mode" class="custom-select setting-select">
-              <option value="studio" id="opt-mode-studio">Mode Studio (Lengkap)</option>
-              <option value="mini" id="opt-mode-mini">Mode Minimalis (Ringkas)</option>
-            </select>
-          </div>
-        </div>
+      <!-- Clean 3-Tab Navigation Bar -->
+      <div class="settings-tabs-nav">
+        <button class="settings-tab-btn active" id="tab-btn-general" data-tab="pane-general">
+          <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          <span id="lbl-tab-general">Audio & Umum</span>
+        </button>
+        <button class="settings-tab-btn" id="tab-btn-sites" data-tab="pane-sites">
+          <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          </svg>
+          <span id="lbl-tab-sites">Situs & Cadangan</span>
+        </button>
+        <button class="settings-tab-btn" id="tab-btn-shortcuts" data-tab="pane-shortcuts">
+          <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+            <line x1="6" y1="8" x2="6.01" y2="8"></line>
+            <line x1="10" y1="8" x2="10.01" y2="8"></line>
+            <line x1="14" y1="8" x2="14.01" y2="8"></line>
+            <line x1="18" y1="8" x2="18.01" y2="8"></line>
+            <line x1="6" y1="12" x2="6.01" y2="12"></line>
+            <line x1="18" y1="12" x2="18.01" y2="12"></line>
+            <line x1="7" y1="16" x2="17" y2="16"></line>
+          </svg>
+          <span id="lbl-tab-shortcuts">Pintasan</span>
+        </button>
+      </div>
 
-        <div class="settings-group">
-          <h4 id="lbl-settings-limiter-title">🛡️ Smart Limiter (Anti-Distorsi)</h4>
-          <label class="toggle-row">
-            <span id="lbl-settings-limiter-desc">Jaga kejernihan audio & cegah distorsi pecah di volume tinggi</span>
-            <input type="checkbox" id="setting-anti-distortion" checked>
-          </label>
-        </div>
-
-        <div class="settings-group">
-          <h4 id="lbl-settings-wheel-title">🖱️ Scroll Mouse untuk Volume</h4>
-          <label class="toggle-row">
-            <span id="lbl-settings-wheel-desc">Putar roda mouse di area slider untuk atur volume</span>
-            <input type="checkbox" id="setting-wheel-scroll" checked>
-          </label>
-        </div>
-
-        <div class="settings-group">
-          <h4 id="lbl-settings-turbo-title">🚀 Turbo Mode (Hingga 800%)</h4>
-          <label class="toggle-row">
-            <span id="lbl-settings-turbo-desc">Izinkan penguatan ekstrem hingga 800%</span>
-            <input type="checkbox" id="setting-turbo-mode">
-          </label>
-        </div>
-
-        <div class="settings-group">
-          <h4 id="lbl-settings-memory-title">💾 Memori Volume Per-Website</h4>
-          <label class="toggle-row">
-            <span id="lbl-settings-memory-desc">Ingat level volume favorit per domain situs</span>
-            <input type="checkbox" id="setting-remember-domains" checked>
-          </label>
-        </div>
-
-        <!-- Default Volume for New Sites -->
-        <div class="settings-group">
-          <div class="settings-group-header">
-            <div>
-              <h4 id="lbl-settings-default-vol-title">🔊 Default volume</h4>
-              <span class="setting-desc" id="lbl-settings-default-vol-desc">Untuk situs yang belum memiliki pengaturan tersimpan</span>
+      <div class="modal-body settings-modal-body">
+        <!-- PANE 1: General (Audio & Kontrol) -->
+        <div id="pane-general" class="settings-tab-pane active">
+          <!-- Language & Mode Card -->
+          <div class="settings-card">
+            <div class="setting-row">
+              <div class="setting-meta">
+                <span class="setting-title" id="lbl-settings-lang-title">Bahasa / Language</span>
+                <span class="setting-desc" id="lbl-settings-lang-desc">Pilih bahasa antarmuka</span>
+              </div>
+              <select id="setting-language" class="custom-select setting-select">
+                <option value="id">🇮🇩 Bahasa Indonesia</option>
+                <option value="en">🇺🇸 English</option>
+              </select>
             </div>
-            <div class="setting-input-badge">
-              <input type="number" id="setting-default-vol-input" min="0" max="600" step="5" value="100" class="number-input-small">
-              <span>%</span>
+            <div class="setting-row">
+              <div class="setting-meta">
+                <span class="setting-title" id="lbl-settings-mode-title">Mode Tampilan Default</span>
+                <span class="setting-desc" id="lbl-settings-mode-desc">Tampilan utama saat SoundMax dibuka</span>
+              </div>
+              <select id="setting-popup-mode" class="custom-select setting-select">
+                <option value="studio" id="opt-mode-studio">Mode Studio (Lengkap)</option>
+                <option value="mini" id="opt-mode-mini">Mode Minimalis (Ringkas)</option>
+              </select>
             </div>
           </div>
-          <div class="slider-track-wrap settings-slider-wrap">
-            <input type="range" id="setting-default-vol-slider" min="0" max="600" step="5" value="100" class="custom-slider">
-            <div id="setting-default-vol-fill" class="slider-fill-bar"></div>
-          </div>
-        </div>
 
-        <!-- Backup & Restore Group -->
-        <div class="settings-group">
-          <h4 id="lbl-settings-backup-title">📦 Backup & Restore</h4>
-          <span class="setting-desc" id="lbl-settings-backup-desc">Ekspor pengaturan & situs tersimpan ke file, atau pulihkan dari cadangan</span>
-          <div class="backup-actions-row">
-            <button id="btn-backup-export" class="backup-btn export-btn" title="Unduh file backup JSON">
-              <span>📤</span> <span id="lbl-btn-export">Export</span>
-            </button>
-            <button id="btn-backup-import" class="backup-btn import-btn" title="Pulihkan pengaturan dari file JSON">
-              <span>📥</span> <span id="lbl-btn-import">Import</span>
-            </button>
-            <input type="file" id="file-input-backup" accept=".json" style="display:none;">
-          </div>
-        </div>
-
-        <!-- Saved Sites Manager Group -->
-        <div class="settings-group saved-sites-section">
-          <div class="saved-sites-header">
-            <div>
-              <h4 id="lbl-saved-sites-count">0 saved site</h4>
-              <span class="setting-desc" id="lbl-saved-sites-desc">Situs dengan pengaturan volume atau EQ kustom</span>
+          <!-- Default Volume Card -->
+          <div class="settings-card">
+            <div class="settings-group-header">
+              <div class="setting-meta">
+                <span class="setting-title" id="lbl-settings-default-vol-title">Default Volume</span>
+                <span class="setting-desc" id="lbl-settings-default-vol-desc">Untuk situs yang belum memiliki pengaturan khusus</span>
+              </div>
+              <div class="setting-input-badge">
+                <input type="number" id="setting-default-vol-input" min="0" max="600" step="5" value="100" class="number-input-small">
+                <span>%</span>
+              </div>
             </div>
-            <button id="btn-delete-all-sites" class="btn-delete-all" title="Hapus semua situs tersimpan">
-              <span id="lbl-btn-delete-all">Delete All</span>
+            <div class="slider-track-wrap settings-slider-wrap">
+              <input type="range" id="setting-default-vol-slider" min="0" max="600" step="5" value="100" class="custom-slider">
+              <div id="setting-default-vol-fill" class="slider-fill-bar"></div>
+            </div>
+          </div>
+
+          <!-- Audio Switches Card (Modern Toggle Switch) -->
+          <div class="settings-card">
+            <label class="toggle-row" for="setting-anti-distortion">
+              <div class="setting-meta">
+                <span class="setting-title" id="lbl-settings-limiter-title">Smart Limiter (Anti-Distorsi)</span>
+                <span class="setting-desc" id="lbl-settings-limiter-desc">Cegah suara pecah & distorsi pada volume tinggi</span>
+              </div>
+              <div class="switch-pill">
+                <input type="checkbox" id="setting-anti-distortion" checked>
+                <span class="switch-slider"></span>
+              </div>
+            </label>
+
+            <label class="toggle-row" for="setting-wheel-scroll">
+              <div class="setting-meta">
+                <span class="setting-title" id="lbl-settings-wheel-title">Scroll Mouse untuk Volume</span>
+                <span class="setting-desc" id="lbl-settings-wheel-desc">Putar roda mouse di area slider untuk atur volume</span>
+              </div>
+              <div class="switch-pill">
+                <input type="checkbox" id="setting-wheel-scroll" checked>
+                <span class="switch-slider"></span>
+              </div>
+            </label>
+
+            <label class="toggle-row" for="setting-turbo-mode">
+              <div class="setting-meta">
+                <span class="setting-title" id="lbl-settings-turbo-title">Turbo Mode (Hingga 800%)</span>
+                <span class="setting-desc" id="lbl-settings-turbo-desc">Izinkan penguatan ekstrem hingga 800%</span>
+              </div>
+              <div class="switch-pill">
+                <input type="checkbox" id="setting-turbo-mode">
+                <span class="switch-slider"></span>
+              </div>
+            </label>
+
+            <label class="toggle-row" for="setting-remember-domains">
+              <div class="setting-meta">
+                <span class="setting-title" id="lbl-settings-memory-title">Memori Volume Otomatis Per-Website</span>
+                <span class="setting-desc" id="lbl-settings-memory-desc">Ingat posisi volume otomatis per domain situs</span>
+              </div>
+              <div class="switch-pill">
+                <input type="checkbox" id="setting-remember-domains" checked>
+                <span class="switch-slider"></span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- PANE 2: Sites & Backup (Situs & Cadangan) -->
+        <div id="pane-sites" class="settings-tab-pane">
+          <!-- Saved Sites Manager Card -->
+          <div class="settings-card saved-sites-section">
+            <div class="saved-sites-header">
+              <div class="setting-meta">
+                <span class="setting-title" id="lbl-saved-sites-count">0 situs tersimpan</span>
+                <span class="setting-desc" id="lbl-saved-sites-desc">Situs dengan pengaturan volume atau EQ khusus</span>
+              </div>
+              <button id="btn-delete-all-sites" class="btn-delete-all" title="Hapus semua situs tersimpan">
+                <span id="lbl-btn-delete-all">Delete All</span>
+              </button>
+            </div>
+            <div id="saved-sites-list" class="saved-sites-list">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Backup & Restore Card -->
+          <div class="settings-card">
+            <div class="setting-meta">
+              <span class="setting-title" id="lbl-settings-backup-title">Backup & Restore Data</span>
+              <span class="setting-desc" id="lbl-settings-backup-desc">Ekspor pengaturan & profil situs ke file, atau pulihkan dari cadangan</span>
+            </div>
+            <div class="backup-actions-row">
+              <button id="btn-backup-export" class="backup-btn export-btn" title="Unduh file backup JSON">
+                <svg class="btn-micro-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                <span id="lbl-btn-export">Export</span>
+              </button>
+              <button id="btn-backup-import" class="backup-btn import-btn" title="Pulihkan pengaturan dari file JSON">
+                <svg class="btn-micro-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                <span id="lbl-btn-import">Import</span>
+              </button>
+              <input type="file" id="file-input-backup" accept=".json" style="display:none;">
+            </div>
+          </div>
+        </div>
+
+        <!-- PANE 3: Shortcuts & About (Pintasan & Info) -->
+        <div id="pane-shortcuts" class="settings-tab-pane">
+          <div class="settings-card">
+            <div class="setting-meta">
+              <span class="setting-title" id="lbl-settings-shortcuts-title">Tombol Pintas Keyboard</span>
+              <span class="setting-desc" id="lbl-settings-shortcuts-desc">Akses cepat pengaturan volume tanpa membuka ekstensi</span>
+            </div>
+            <div class="shortcuts-list">
+              <div class="shortcut-item">
+                <span class="sc-key">Alt + V</span>
+                <span class="sc-desc" id="sc-desc-open">Buka popup SoundMax</span>
+              </div>
+              <div class="shortcut-item">
+                <span class="sc-key">Alt + ↑</span>
+                <span class="sc-desc" id="sc-desc-up">Tingkatkan volume +10%</span>
+              </div>
+              <div class="shortcut-item">
+                <span class="sc-key">Alt + ↓</span>
+                <span class="sc-desc" id="sc-desc-down">Kurangi volume -10%</span>
+              </div>
+              <div class="shortcut-item">
+                <span class="sc-key">Alt + M</span>
+                <span class="sc-desc" id="sc-desc-mute">Toggle Mute / Unmute</span>
+              </div>
+              <div class="shortcut-item">
+                <span class="sc-key">0 – 6</span>
+                <span class="sc-desc" id="sc-desc-jump">Langsung meloncat ke 0% – 600%</span>
+              </div>
+            </div>
+
+            <button id="btn-configure-shortcuts" class="btn-configure-shortcuts" title="Buka halaman pengaturan tombol pintas browser">
+              <svg class="btn-micro-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                <line x1="6" y1="8" x2="6.01" y2="8"></line>
+                <line x1="10" y1="8" x2="10.01" y2="8"></line>
+                <line x1="14" y1="8" x2="14.01" y2="8"></line>
+                <line x1="18" y1="8" x2="18.01" y2="8"></line>
+                <line x1="6" y1="12" x2="6.01" y2="12"></line>
+                <line x1="18" y1="12" x2="18.01" y2="12"></line>
+                <line x1="7" y1="16" x2="17" y2="16"></line>
+              </svg>
+              <span id="lbl-btn-configure-shortcuts">Atur / Ubah Pintasan di Browser</span>
             </button>
           </div>
-          <div id="saved-sites-list" class="saved-sites-list">
-            <!-- Dynamically populated -->
-          </div>
-        </div>
 
-        <div class="settings-group">
-          <h4 id="lbl-settings-shortcuts-title">⌨️ Tombol Pintas Keyboard</h4>
-          <div class="shortcut-item">
-            <span class="sc-key">Alt + V</span>
-            <span class="sc-desc" id="sc-desc-open">Buka popup SoundMax</span>
+          <div class="settings-author-badge">
+            <span class="author-badge-icon">
+              <svg class="btn-micro-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+            </span>
+            <span>SoundMax Studio v1.2.0 • Created with ❤️ by <a href="https://github.com/Pikurii" target="_blank" rel="noopener noreferrer" class="author-link" id="link-settings-creator">Pikuri</a></span>
           </div>
-          <div class="shortcut-item">
-            <span class="sc-key">Alt + ↑</span>
-            <span class="sc-desc" id="sc-desc-up">Tingkatkan volume +10%</span>
-          </div>
-          <div class="shortcut-item">
-            <span class="sc-key">Alt + ↓</span>
-            <span class="sc-desc" id="sc-desc-down">Kurangi volume -10%</span>
-          </div>
-          <div class="shortcut-item">
-            <span class="sc-key">Alt + M</span>
-            <span class="sc-desc" id="sc-desc-mute">Toggle Mute / Unmute</span>
-          </div>
-          <div class="shortcut-item">
-            <span class="sc-key">Angka 0 – 6</span>
-            <span class="sc-desc" id="sc-desc-jump">Langsung meloncat ke 0% – 600%</span>
-          </div>
-        </div>
-
-        <!-- Creator Watermark Badge -->
-        <div class="settings-author-badge">
-          <span>SoundMax Studio v1.2.0 • Created with ❤️ by <a href="https://github.com/Pikurii" target="_blank" rel="noopener noreferrer" class="author-link" id="link-settings-creator">Pikuri</a></span>
         </div>
       </div>
+
       <div class="modal-footer">
         <button id="btn-save-settings" class="modal-save-btn">Selesai</button>
       </div>

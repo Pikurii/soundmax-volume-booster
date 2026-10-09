@@ -58,6 +58,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       handleIsCaptured(message.tabId).then(sendResponse);
       return true;
 
+    case 'TAB_RELOADING':
+      handleTabReloading(message);
+      sendResponse({ success: true });
+      break;
+
+    case 'RESTORE_TAB_VOLUME':
+      handleRestoreTabVolume(message);
+      sendResponse({ success: true });
+      break;
+
     case 'UPDATE_VOLUME':
       handleUpdateVolume(message);
       sendResponse({ success: true });
@@ -155,10 +165,15 @@ async function handleStartCapture({ tabId, streamId, volume = 100, isMuted = fal
     filter12k.frequency.setValueAtTime(12000, audioCtx.currentTime);
     filter12k.gain.setValueAtTime(eq.b12k ?? eq.treble ?? 0, audioCtx.currentTime);
 
-    // Master Volume Gain
+    // Master Volume Gain with Smooth Onboarding Ramp
     const gainNode = audioCtx.createGain();
     const targetGain = isMuted ? 0 : Math.max(0, volume / 100);
-    gainNode.gain.setValueAtTime(targetGain, audioCtx.currentTime);
+    const initialGain = isMuted ? 0 : 1.0; // Start at natural unity gain (matches browser native output)
+    gainNode.gain.setValueAtTime(initialGain, audioCtx.currentTime);
+    if (!isMuted && targetGain !== initialGain) {
+      // Gracefully glide to target volume to prevent popping or explosive volume jumps
+      gainNode.gain.linearRampToValueAtTime(targetGain, audioCtx.currentTime + 0.15);
+    }
 
     // Studio Brickwall Peak Limiter (-1.5 dBFS)
     const compressor = audioCtx.createDynamicsCompressor();
@@ -285,6 +300,8 @@ function applySmartLimiter(nodeData) {
     nodeData.compressor.release.setValueAtTime(release, now);
 
     nodeData.softClipper.curve = masteringSoftClipCurve;
+    // CPU Optimization: only oversample 2x if boost > 100% to save substantial CPU
+    nodeData.softClipper.oversample = vol > 100 ? '2x' : 'none';
     nodeData.outputGain.gain.setValueAtTime(outHeadroom, now);
   } else {
     // Completely bypassed: 100% linear raw pass-through
@@ -293,6 +310,7 @@ function applySmartLimiter(nodeData) {
     nodeData.compressor.knee.setValueAtTime(0, now);
 
     nodeData.softClipper.curve = linearPassCurve;
+    nodeData.softClipper.oversample = 'none';
     nodeData.outputGain.gain.setValueAtTime(1.0, now);
   }
 }
@@ -323,9 +341,43 @@ function handleUpdateVolume({ tabId, volume, isMuted }) {
   const now = nodeData.audioCtx.currentTime;
   nodeData.gainNode.gain.cancelScheduledValues(now);
   nodeData.gainNode.gain.setValueAtTime(nodeData.gainNode.gain.value, now);
-  nodeData.gainNode.gain.linearRampToValueAtTime(effectiveGain, now + 0.02);
+  // 35ms analog-fader de-zippering
+  nodeData.gainNode.gain.linearRampToValueAtTime(effectiveGain, now + 0.035);
 
   // Re-adapt limiter parameters dynamically to new volume level
+  applySmartLimiter(nodeData);
+}
+
+// Prepare tab for navigation/reload by smoothly resetting gain to unity (1.0)
+// This prevents explosive sound when the new document connects to Web Audio
+function handleTabReloading({ tabId }) {
+  const nodeData = tabAudioNodes.get(tabId);
+  if (!nodeData) return;
+  const now = nodeData.audioCtx.currentTime;
+  nodeData.gainNode.gain.cancelScheduledValues(now);
+  nodeData.gainNode.gain.setValueAtTime(nodeData.gainNode.gain.value, now);
+  // Gently ramp to unity gain (1.0)
+  nodeData.gainNode.gain.linearRampToValueAtTime(1.0, now + 0.05);
+}
+
+// Restore boosted volume smoothly when tab audio plays after reload
+function handleRestoreTabVolume({ tabId, volume }) {
+  const nodeData = tabAudioNodes.get(tabId);
+  if (!nodeData) return;
+
+  if (nodeData.audioCtx.state === 'suspended') {
+    nodeData.audioCtx.resume().catch(() => {});
+  }
+
+  if (typeof volume === 'number') {
+    nodeData.volume = volume;
+  }
+  const effectiveGain = nodeData.isMuted ? 0 : Math.max(0, nodeData.volume / 100);
+  const now = nodeData.audioCtx.currentTime;
+  nodeData.gainNode.gain.cancelScheduledValues(now);
+  nodeData.gainNode.gain.setValueAtTime(nodeData.gainNode.gain.value, now);
+  // Smoothly ramp to the target boosted volume over 150ms to prevent abrupt loudness shock
+  nodeData.gainNode.gain.linearRampToValueAtTime(effectiveGain, now + 0.15);
   applySmartLimiter(nodeData);
 }
 
@@ -430,7 +482,26 @@ function handleStopCapture(tabId) {
   // In Chromium, an active AudioContext keeps a high-priority real-time hardware
   // audio rendering thread running continuously (using ~0.5% - 2% CPU even on silence).
   // Suspending the AudioContext halts the rendering thread completely -> 0.0% CPU!
-  if (tabAudioNodes.size === 0 && sharedAudioCtx && sharedAudioCtx.state === 'running') {
-    sharedAudioCtx.suspend().catch(() => {});
+  if (tabAudioNodes.size === 0) {
+    if (sharedAudioCtx && sharedAudioCtx.state === 'running') {
+      sharedAudioCtx.suspend().catch(() => {});
+    }
+    // Notify background service worker so it can schedule idle offscreen document termination
+    chrome.runtime.sendMessage({
+      type: 'OFFSCREEN_ALL_TABS_STOPPED'
+    }).catch(() => {});
   }
+}
+
+// Complete teardown on document unload to prevent dangling audio resources
+if (typeof window !== 'undefined' && window.addEventListener) {
+  window.addEventListener('beforeunload', () => {
+    for (const tabId of Array.from(tabAudioNodes.keys())) {
+      handleStopCapture(tabId);
+    }
+    if (sharedAudioCtx && sharedAudioCtx.state !== 'closed') {
+      sharedAudioCtx.close().catch(() => {});
+      sharedAudioCtx = null;
+    }
+  });
 }

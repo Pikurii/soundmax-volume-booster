@@ -1,8 +1,8 @@
-# 🔊 SoundMax - Tab Audio Booster & Studio EQ (Manifest V3)
+# SoundMax - Tab Audio Booster & Studio Equalizer
 
 <p align="center">
   <a href="https://github.com/Pikurii/soundmax-volume-booster/raw/main/soundmax-extension.zip">
-    <img src="https://img.shields.io/badge/⬇️_DOWNLOAD_EXTENSION_(ZIP)-READY_TO_USE-22c55e?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Download ZIP" />
+    <img src="https://img.shields.io/badge/Download_Extension_(ZIP)-Ready_to_Use-22c55e?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Download ZIP" />
   </a>
   <a href="https://ko-fi.com/pikurii" target="_blank">
     <img src="https://img.shields.io/badge/Ko--fi-Support_Pikuri-ff5e5b?style=for-the-badge&logo=kofi&logoColor=white" alt="Support on Ko-fi" />
@@ -13,144 +13,197 @@
 </p>
 
 <p align="center">
-  <a href="https://developer.chrome.com/docs/extensions/mv3/"><img src="https://img.shields.io/badge/Chrome%20Extension-Manifest%20V3-blue?logo=google-chrome" alt="Manifest V3" /></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License MIT" /></a>
-  <a href="https://github.com/Pikurii/soundmax-volume-booster"><img src="https://img.shields.io/github/stars/Pikurii/soundmax-volume-booster?style=social" alt="GitHub stars" /></a>
+  <a href="https://developer.chrome.com/docs/extensions/mv3/"><img src="https://img.shields.io/badge/Platform-Manifest_V3-2563eb" alt="Manifest V3" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-10b981.svg" alt="License MIT" /></a>
+  <a href="https://github.com/Pikurii/soundmax-volume-booster"><img src="https://img.shields.io/github/stars/Pikurii/soundmax-volume-booster?style=flat" alt="GitHub stars" /></a>
 </p>
 
-A modern, high-performance browser extension for **Google Chrome, Microsoft Edge, Brave, and Opera** that lets you control and amplify individual tab audio up to **600%** (or up to **800%** with Turbo Mode), type custom volume percentages directly, shape sound with a **5-Band Studio Parametric Equalizer (60Hz, 250Hz, 1kHz, 4kHz, 12kHz)**, and **save named custom presets**.
+SoundMax is a browser extension for Chromium browsers (Google Chrome, Opera GX, Microsoft Edge, Brave, and Vivaldi) that lets you control and boost individual tab audio up to 600% (or up to 800% in Turbo Mode). It includes a 5-band studio parametric equalizer, an anti-distortion limiter, domain-specific volume defaults, dual layout modes, and real-time synchronization with native browser tab controls.
 
-Engineered with a **Zero-Leak & 0.0% Idle CPU** architecture (*hardware AudioContext suspension & full AudioNode graph deallocation*), **Dual View Modes (Mini & Studio)**, and mastering-grade anti-distortion (*brickwall peak limiter & analog tape soft-clipper*).
-
----
-
-## ✨ Features & Highlights
-
-- **⭐ Site-Specific Volume & EQ Defaults**:
-  - Click **"Default Situs"** on any website (e.g. `youtube.com`) to save your preferred volume and active EQ curve specifically for that domain. SoundMax automatically applies them whenever you open or return to that site!
-- **🔊 Global Default Volume for Unvisited Sites**:
-  - Configure a custom fallback volume (e.g. 100%, 120%) in Settings so newly opened websites start at your preferred listening level.
-- **📦 Backup & Restore (JSON Export & Import)**:
-  - Easily export all your custom EQ presets, volume preferences, and saved domain profiles to a portable `.json` file, or restore them anytime with 1-click import.
-- **📋 Saved Sites Profile Manager**:
-  - View, audit, and manage all your site overrides in Settings. Remove individual site rules with the `✕` button or wipe all overrides with `Delete All`.
-- **📐 Dual View Mode (Mini & Studio)**:
-  - **Mini Mode (Compact)**: Ultra-compact view (~250px × 95px) for lightning-fast volume adjustments, site default toggle, one-click Turn Off / On, 100% Reset, and expand button.
-  - **Studio Mode (Full)**: Comprehensive control center with the full 5-band studio parametric equalizer, visualizer, quick boost presets, and live audible tab switcher.
-- **🖱️ Mouse Wheel Volume Scrolling**:
-  - Hover your cursor over the volume slider area and scroll your mouse wheel to adjust volume up or down in 5% increments.
-  - Natural page and mixer scrolling remains uninterrupted when hovering outside the slider. Can be toggled on/off in Settings.
-- **🛡️ Adaptive Smart Limiter & Anti-Distortion**:
-  - Integrated `DynamicsCompressorNode` (-1.5 dBFS) coupled with an analog `WaveShaperNode` soft-clipping saturation curve.
-  - Eliminates harsh digital clipping and distortion even at extreme boost levels (600% - 800%).
-- **⌨️ Direct Number Input (Editable Percentage)**:
-  - Type exact volume values (e.g. `125`, `275`, `450`, `600`) directly into the input box next to the slider and press `Enter`.
-- **🎛️ 5-Band Studio Parametric Equalizer**:
-  - **60 Hz (Sub-Bass)**: Subwoofer rumble, kick drum punch, and cinematic low-end.
-  - **250 Hz (Bass)**: Warmth, bass guitar harmonics, and male vocal body.
-  - **1 kHz (Mid)**: Core vocal intelligibility, podcast dialogue, and lead instruments.
-  - **4 kHz (Presence)**: Speech articulation, anime vocal clarity, and crisp movie dialogue.
-  - **12 kHz (Treble / Air)**: Acoustic sparkle, airy sheen, cymbals, and spatial detail.
-- **💾 Unlimited Custom EQ Presets**:
-  - Tune the 5 bands to your liking and click **"Save Preset"** to give it a custom name (*Anime Vocal Mode*, *EDM Bass*, *Podcast Master*). Presets are saved persistently in browser storage.
-- **🌐 Bilingual Support (English & Bahasa Indonesia)**:
-  - Instant one-click language toggle (`ID` / `EN`) in the top header. All UI text, preset descriptions, and tooltips switch dynamically.
-- **📑 Live Audible Tab Switcher**:
-  - Scans and lists all open tabs currently playing audio. Jump to any tab with a single click.
-- **🏷️ Real-time Toolbar Badge**:
-  - Displays current volume percentage right on your browser toolbar icon with color-coded boost tiers (Blue → Amber → Red).
-- **🌓 Dark & Light Glassmorphism Themes**:
-  - Sleek modern glassmorphism design with a high-contrast dark mode and clean light mode.
+Built strictly under Manifest V3 specifications with an on-demand, zero-leak resource architecture that ensures 0.0% CPU and 0 MB audio memory usage when idle.
 
 ---
 
-## ⚡ Performance Guarantees & Zero-Leak Architecture
+## Interface Previews
 
-SoundMax is engineered to adhere strictly to Chrome Manifest V3 guidelines, ensuring zero battery drain and minimal memory footprint:
+### Studio Mode (Full Experience)
+Comprehensive audio workstation with volume control, quick boost buttons, active site default strip, 5-band equalizer, and live audible tab switcher.
 
-1. **0.0% Idle CPU Guarantee (AudioContext Auto-Suspend)**:
-   - In Chromium browsers, an `AudioContext` left in the `running` state spins a real-time hardware audio rendering thread continuously (~0.5%–2% CPU even during complete silence).
-   - SoundMax automatically suspends the `AudioContext` whenever tab capture stops or volume is normalized. CPU usage immediately drops to **0.0%**.
-2. **Complete AudioNode Deallocation (Zero RAM Leak)**:
-   - When a tab is closed or unboosted, all 10 audio processing nodes (`source`, 5 biquad filters, `gainNode`, `compressor`, `softClipper`, `outputGain`) are disconnected (`.disconnect()`), media tracks are stopped (`.stop()`), and references are cleared for immediate V8 Garbage Collection.
-3. **Dead Tab Cleanup & DOM Memoization**:
-   - Closed or discarded tabs are automatically pruned from internal maps via `chrome.tabs.onRemoved` and `chrome.tabs.onReplaced`.
-   - The popup's tab polling uses signature memoization to prevent unnecessary DOM reflows and memory allocations.
-4. **100% Offline & Safe**:
-   - Zero external scripts, zero `eval()`, zero `new Function()`, zero remote telemetry `fetch` calls, and no unnecessary permissions (no `<all_urls>` required).
+<p align="center">
+  <img src="assets/screenshots/studio-mode-dark.png" width="48%" alt="Studio Mode Dark Theme" />
+  &nbsp;
+  <img src="assets/screenshots/studio-mode-light.png" width="48%" alt="Studio Mode Light Theme" />
+</p>
+
+### Mini Mode (Compact View)
+Streamlined layout (~250px x 95px) for quick volume adjustments, 1-click mute, site defaults, and 100% reset without cluttering the screen.
+
+<p align="center">
+  <img src="assets/screenshots/mini-mode-dark.png" width="48%" alt="Mini Mode Dark Theme" />
+  &nbsp;
+  <img src="assets/screenshots/mini-mode-light.png" width="48%" alt="Mini Mode Light Theme" />
+</p>
+
+### 5-Band Studio Parametric Equalizer
+Five precision frequency bands with studio presets, custom preset saving, and real-time Web Audio DSP filtering.
+
+<p align="center">
+  <img src="assets/screenshots/studio-equalizer.png" width="55%" alt="5-Band Studio Equalizer" />
+</p>
 
 ---
 
-## ⌨️ Keyboard Shortcuts
+## Core Features
+
+### Audio Amplification & Direct Input
+- Boost volume smoothly from 0% up to 600% (expandable to 800% via Turbo Mode in Settings).
+- Type exact volume percentages directly into the numeric input box (e.g., `125`, `250`, `450`) and press Enter.
+- Smooth analog-style gain ramping eliminates volume spikes and audio popping when scrubbing the slider.
+- Mouse wheel scrolling over the volume slider area lets you adjust volume in 5% steps.
+
+### 5-Band Studio Parametric Equalizer
+Fine-tune individual frequency bands using Web Audio API biquad filters:
+- **60 Hz (Sub-Bass Low Shelf)**: Subwoofer depth, kick drums, and low-frequency rumble.
+- **250 Hz (Bass Peaking)**: Warmth, bass guitar clarity, and vocal lower body.
+- **1 kHz (Mid Peaking)**: Core speech clarity, vocal intelligibility, and instruments.
+- **4 kHz (Presence Peaking)**: Speech articulation, crisp dialogue, and detail.
+- **12 kHz (Treble High Shelf)**: Acoustic sparkle, cymbals, air, and breath.
+- Built-in reference presets: Flat, Bass Booster, Vocal Clarifier, Rock & Punch, and Night Mode.
+- Save unlimited custom named presets directly to browser storage.
+
+### Adaptive Smart Limiter (Anti-Distortion)
+- Dynamic brickwall compressor (-1.5 dBFS) paired with analog tape soft-clipping saturation.
+- Prevents harsh digital clipping and speaker crackle at extreme boost levels.
+- Automatically bypasses polyphase oversampling when volume is at or below 100% to save CPU cycles.
+
+### Per-Site Volume & EQ Profiles
+- Save unique volume and equalizer settings for specific websites (e.g., set YouTube to 180% with Vocal Boost, while keeping Netflix at 100% Flat).
+- SoundMax recognizes the website domain and applies the saved profile automatically when the page loads.
+- Visual badge indicator displays active site settings, with a single-click update button when adjusting volume on a saved domain.
+- Saved Sites Manager in Settings allows viewing, editing, or clearing stored domain profiles.
+
+### Dual Interface Modes
+- **Studio Mode**: Full control panel featuring the complete 5-band equalizer, quick presets, site configuration strip, and live audio tab list.
+- **Mini Mode**: Compact, distraction-free widget focused on fast slider adjustments, mute toggling, and preset switching.
+- Switch between modes with a single click, or set your preferred default mode in Settings.
+
+### Browser Tab Synchronization & Audible Tab Switcher
+- Real-time two-way synchronization with native browser tab controls (including Opera GX and Chrome tab mute buttons).
+- Live audible tab scanner identifies all tabs currently outputting sound across windows and lets you switch to any tab with one click.
+- Automatic gain handoff prevents volume explosions when refreshing video streams or navigating within YouTube.
+
+### Backup & Restore
+- Export all settings, saved site profiles, and custom EQ presets into a clean `.json` file.
+- Restore configuration anytime with one-click import.
+
+### Bilingual Support
+- Complete UI localization for English and Bahasa Indonesia.
+- Switch languages instantly from the header toggle button or the Settings menu.
+
+---
+
+## Performance & Resource Management
+
+SoundMax was written specifically to avoid common extension issues such as background battery drain, dangling audio contexts, or residual memory usage.
+
+### 1. On-Demand Offscreen Lifecycle
+Under Chrome Manifest V3, Web Audio processing requires an offscreen document. Rather than keeping an offscreen document running permanently:
+- No offscreen document is created on browser startup.
+- The offscreen document is initialized only when volume is boosted or when the popup opens.
+- When all boosted tabs are closed or reset to 100%, an idle timer (20 seconds) automatically terminates the offscreen document via `chrome.offscreen.closeDocument()`.
+- **Result**: Memory usage drops to 0 MB and the offscreen process disappears completely from the browser task manager when not in active use.
+
+### 2. 0.0% Idle CPU Suspension
+- If audio is unboosted or paused, the underlying `AudioContext` is suspended. Suspending the context halts Chromium's hardware audio rendering thread completely, guaranteeing 0.0% CPU usage.
+
+### 3. Complete Graph Deallocation
+- When a captured tab is closed, all associated media stream tracks are stopped (`track.stop()`), all 10 audio nodes (`source`, 5 biquad filters, `gainNode`, `compressor`, `softClipper`, `outputGain`) are disconnected, and references are cleared to permit immediate garbage collection.
+
+### 4. Controlled IPC & Throttled Rendering
+- Slider movement is throttled to ~28 fps (35ms) to prevent message flooding across browser processes.
+- Tab scanner polling uses signature memoization to avoid layout thrashing and DOM redraws when tab states have not changed.
+
+---
+
+## Keyboard Shortcuts
 
 | Shortcut | Action |
 | :--- | :--- |
 | `Alt + V` | Open SoundMax popup |
-| `Alt + ↑` | Increase active tab volume (+10%) |
-| `Alt + ↓` | Decrease active tab volume (-10%) |
+| `Alt + Up` | Increase active tab volume (+10%) |
+| `Alt + Down` | Decrease active tab volume (-10%) |
 | `Alt + M` | Toggle Mute / Unmute |
-| `0` to `6` *(when popup is open)* | Jump directly to 0%, 100%, 200%, ..., 600% |
-| `↑` / `↓` *(when popup is open)* | Adjust volume in 10% steps |
-| `Enter` *(inside volume number input)* | Apply typed volume percentage |
+| `0` to `6` *(in popup)* | Jump directly to 0%, 100%, 200%, ..., 600% |
+| `Up` / `Down` *(in popup)* | Adjust volume in 10% steps |
+| `Enter` *(in number box)* | Apply typed volume percentage |
 
-> **Note**: You can customize shortcuts anytime by navigating to `chrome://extensions/shortcuts` in your address bar.
+To modify shortcuts in your browser:
+- **Chrome / Brave / Edge**: Open `chrome://extensions/shortcuts`
+- **Opera / Opera GX**: Open `chrome://extensions/shortcuts` (standard Chromium shortcut manager)
 
 ---
 
-## 🚀 How to Install & Use
+## Installation
 
-### Option 1: 1-Click Install via Pre-built ZIP (Recommended)
-1. Click the green button above or download [`soundmax-extension.zip`](https://github.com/Pikurii/soundmax-volume-booster/raw/main/soundmax-extension.zip).
-2. Extract the ZIP archive into any folder on your computer.
-3. Open your browser and navigate to `chrome://extensions` (or `edge://extensions` in Edge).
-4. Turn on **Developer mode** (toggle switch in the top-right corner).
+### Method 1: Pre-packaged ZIP (Ready to Use)
+1. Download [`soundmax-extension.zip`](https://github.com/Pikurii/soundmax-volume-booster/raw/main/soundmax-extension.zip).
+2. Extract the ZIP file into a folder on your computer.
+3. Open your browser and navigate to `chrome://extensions` (or `edge://extensions`).
+4. Enable **Developer mode** using the toggle switch in the upper-right corner.
 5. Click **Load unpacked** and select the extracted folder.
-6. Pin **SoundMax** to your toolbar and enjoy!
+6. Pin SoundMax to your toolbar for quick access.
 
-### Option 2: Clone from Source
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/Pikurii/soundmax-volume-booster.git
-   ```
-2. In `chrome://extensions`, enable **Developer mode**.
-3. Click **Load unpacked** and select this cloned repository root folder.
+### Method 2: Clone from Repository
+```bash
+git clone https://github.com/Pikurii/soundmax-volume-booster.git
+```
+In `chrome://extensions`, enable **Developer mode**, click **Load unpacked**, and select the cloned directory.
 
 ---
 
-## 📁 Repository Structure
+## Privacy Policy
+
+SoundMax was built with a privacy-first, offline-only architecture:
+
+1. **Zero Data Collection**: SoundMax does not collect, log, track, store, or transmit any user data, URLs, browsing history, search terms, or audio stream content.
+2. **100% Local Processing**: All audio amplification, filtering, and equalization happen entirely within your local browser process using the standard Web Audio API. Audio buffers never leave your machine.
+3. **No External Network Requests**: The extension contains zero third-party analytics scripts, zero tracking pixels, zero external dependencies, and makes no remote network calls (`fetch` or `XMLHttpRequest`).
+4. **Local Configuration Storage**: Your saved volume settings, domain profiles, and custom EQ presets are stored strictly inside your browser's local sandbox (`chrome.storage.local`). They are never synchronized to external servers.
+5. **Minimal Permissions**: The extension requests only permissions strictly necessary for its functionality:
+   - `tabCapture`: To route tab audio through the Web Audio equalization graph.
+   - `offscreen`: To host the Web Audio API context in accordance with Manifest V3 requirements.
+   - `storage`: To save your preferences locally.
+   - `tabs`: To read tab audio state, title, and domain name for site-specific profiles.
+
+---
+
+## Project Structure
 
 ```text
 soundmax-volume-booster/
 ├── manifest.json            # Extension configuration (Manifest V3)
-├── background.js           # Background service worker (tab state sync & badge)
+├── background.js           # Background service worker (state sync, on-demand lifecycle)
 ├── offscreen/
 │   ├── offscreen.html      # Offscreen DOM host for Web Audio API
-│   └── offscreen.js        # DSP Audio Engine: 5-Band EQ, Limiter, 0.0% CPU suspend
+│   └── offscreen.js        # DSP Audio Engine: 5-Band EQ, limiter, 0.0% CPU suspend
 ├── popup/
 │   ├── popup.html          # Dual Mode UI (Mini & Studio views)
-│   ├── popup.css           # Glassmorphism dark/light design system
+│   ├── popup.css           # Modern glassmorphism stylesheet (Dark & Light)
 │   └── popup.js            # UI controller, state sync & preset manager
-├── icons/                  # High-resolution extension icons (16, 32, 48, 128 px)
-├── dev-tools/              # Interactive preview simulator & audio test bench
-│   ├── server.js           # Local preview web server
-│   ├── preview.html        # Interactive popup simulator
-│   ├── generate_icons.js   # Icon generator utility
-│   └── test-page/          # Audio synthesizer test bench
-├── soundmax-extension.zip  # Production ZIP archive ready for Chrome Web Store & direct install
+├── icons/                  # Vector & raster extension icons (16, 32, 48, 128 px)
+├── assets/
+│   └── screenshots/        # Interface preview screenshots (Studio, Mini, Equalizer)
+├── dev-tools/              # Local preview web server and audio test bench
+├── soundmax-extension.zip  # Pre-built distribution package
 ├── LICENSE                 # MIT License (c) 2026 Pikuri
 └── README.md               # Documentation
 ```
 
 ---
 
-## 👨‍💻 Developer & Watermark
+## Author & License
 
-- **Creator & Maintainer**: **Pikuri** ([@Pikurii](https://github.com/Pikurii))
-- **GitHub Profile**: [https://github.com/Pikurii](https://github.com/Pikurii)
-- **Support & Sponsor**: [Ko-fi](https://ko-fi.com/pikurii) • [Tako.id](https://tako.id/Pikuri)
-
----
-
-## 📄 License
-
-This project is licensed under the [MIT License](LICENSE) - Copyright (c) 2026 **Pikuri**.
+- **Author**: Pikuri ([@Pikurii](https://github.com/Pikurii))
+- **Repository**: [https://github.com/Pikurii/soundmax-volume-booster](https://github.com/Pikurii/soundmax-volume-booster)
+- **Support**: [Ko-fi](https://ko-fi.com/pikurii) | [Tako.id](https://tako.id/Pikuri)
+- **License**: Released under the [MIT License](LICENSE).
